@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Practical distance sampling in R</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">Practical distance sampling in R</h1>
+</div>
+
+
+<p>Welcome to the <em>Practical distance sampling in R</em> “book” webpage. You can use the drop-down menus above to read the book, if you don’t know what that might entail, read on…</p>
+<div id="a-book-about-distance-sampling" class="section level2">
+<h2>A book about distance sampling…</h2>
+<p>During 2014-2015, I (<a href="http://converged.yt">Dave Miller</a>) am writing a book about how to use R to estimate animal abundance, in particular using distance sampling methods. An outline…</p>
+<p><strong>Aim</strong>: the book will explain how to build models of distance sampling data using packages available for the programming language R. It will be assumed that readers have already conducted field work and have data to analyse.</p>
+<p><strong>Audience</strong>: ecology/biology masters and PhD students, field researchers, environmental consultants, wildlife/natural resources scientists.</p>
+<p><strong>Audience background</strong>: “quantitatively minded” but not statisticians by training, (e.g. you should be comfortable with fitting and explaining results of a GLM in R). It’ll be assumed that those reading will be familiar with R (i.e. know what <code>data.frame</code>s are, how to build them, general “data-mudging”, though not consider themselves “programmers”).</p>
+<p>Initially the book will consist of two parts, though this may well get expanded to further parts:</p>
+<ol style="list-style-type: decimal">
+<li>Distance sampling
+<ul>
+<li><em>Introduction to distance sampling</em>: why do distance sampling? Explanation of survey setup. What does distance sampling data look like?</li>
+<li><em>Models for detectability</em>: introduction to the detection function, what makes a good detection function?</li>
+<li><em>What else affects detectability?</em>: covariate models, selecting covariates, size bias.</li>
+<li><em>Improving the fit of detection functions</em>: adjustments and mixtures, other key functions. Model selection via AIC.</li>
+<li><em>Estimating abundance</em>: Horvitz-Thompson estimators, stratification (how and when).</li>
+<li><em>How certain are we in our estimates?</em>: uncertainty estimation, explanation of variance components.</li>
+</ul></li>
+<li>Spatial models for distance sampling data
+<ul>
+<li><em>Why build spatial models?</em>: Why use a DSM rather than just Horvitz-Thompson? What are the benefits/costs?</li>
+<li><em>Survey set up</em>: what does a DSM survey look like? Data setup.</li>
+<li><em>Model formulation</em>: what do we require from the model, 2-stage modelling, why GAMs? What does the response mean?</li>
+<li><em>Crash course in GAMs</em>: What are GAMs? Wigglyness, penalties, “this is just a GLM”</li>
+<li><em>Adding covariates</em>: static vs. dynamic variables, how does this dichotomy change the response. Term selection, how do we know a term is “useful”? How do we interpret smooth terms? When should we use random effects?</li>
+<li><em>Response distributions</em>: Relations between distributions, when are particular distributions appropriate? Selecting a distribution, model discrimination.</li>
+<li><em>Estimating and mapping abundance</em>: Prediction grids: how to build them, what resolutions make sense, extrapolation issues. Making predictions, plotting them.</li>
+<li><em>Uncertainty estimation</em>: explanation of bootstrap and analytical approaches. Uncertainty in point estimates. Uncertainty maps: CV vs. SE vs. confidence intervals. Uncertainty from the detection function.</li>
+<li><em>Advanced DSMs</em>: autocorrelation, temporal models.</li>
+</ul></li>
+<li>Appendices
+<ul>
+<li><em>Data format</em>: A guide to getting your data into the right format for distance sampling analyses.</li>
+</ul></li>
+</ol>
+</div>
+<div id="a-book-using-r" class="section level2">
+<h2>A book using R…</h2>
+<p>The aim of the book is to introduce researchers to performing analyses of distance sampling data in R. Though there will be some coverage of more conceptual and field methods, the focus will be analysis in R. Therefore, it’s recommended that readers are already fairly familiar with R.</p>
+<p>The book is written in <code>knitr</code>, so all plots, models and so on will be produced, fitted etc as the book is “built”. All data sets will be available for readers to investigate independently.</p>
+<p>Most quantities that appear in the book are computed during book “compilation”, so if you’re unsure where a number (or figure) came from, you can look <a href="http://github.com/dill/RDistanceBook">at the source of the chapter and see what code generated that result</a>.</p>
+</div>
+<div id="a-book-written-in-the-open" class="section level2">
+<h2>A book written in the open…</h2>
+<p>I’m writing the book “in the open” in the hope that those interested will contribute suggestions as I’m going. All content will be available on this website, as well as the files used to generate the figures and models referenced in the book.</p>
+<p>A <code>git</code> repository containing the text of the book <a href="http://github.com/dill/RDistanceBook">can be found on github</a>. You can use github’s <a href="https://github.com/dill/RDistanceBook/issues">Issues</a> to submit suggestions, or (if you’re more <code>git</code> savvy) you can <a href="https://help.github.com/articles/using-pull-requests/">submit pull requests</a> to alter the content.</p>
+</div>
+<div id="a-book-without-a-publisher" class="section level2">
+<h2>A book without a publisher…</h2>
+<p>If you’re a publisher and you’d like to print a dead tree version of these pages, I’d be very interested in talking to you.</p>
+<p>If you are interested in obtaining a dead tree copy of these pages, then please let me know by <a href="https://docs.google.com/forms/d/1z5bFFd_GpUXeVzbr5wuwoUKT5wvhNizrGpEOiCZik58/viewform">filling in this Google Form</a>; having evidence of demand will make it more likely that paper copy will exist. If you fill in the form, I’ll e-mail you if a paper copy becomes (or is likely to become) available but won’t use your address for any other reason.</p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<!-- <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>-->
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
