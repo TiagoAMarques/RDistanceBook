@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>What else affects detectability?</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">What else affects detectability?</h1>
+</div>
+
+
+<p>In the last chapter we looked at how we could model the probability of an animal being detected using the distances to the animals from the observers. A little thought leads us to believe that in addition to distance, other factors will influence the detection probability. For example: a pod of 50 whales will be much easier to spot than a single whale; it’s harder to see birds early in the morning when it’s dark and misty; and it’s much more difficult to see (or do) anything when the sea is extremely choppy. We’d like to take these factors into account when we’re building our detection function, to ensure that we can model the detection process as accurately as possible.</p>
+<p>Distance sampling methods have a property known as <em>pooling robustness</em> which means that if we assume that the heterogeneity in detectability is relatively small (i.e. there’s not much variation between animals in how detectable they are), then estimates of abundance will not be biased (though they might have high variance; <span class="citation">Burnham et al. (2004)</span>, Section 11.12). This means that usually we do not need to worry about bias but if we can model the heterogeneity in detectability then we can improve the precision of our abundance estimates.</p>
+Let’s return to the pantropical spotted dolphin example from the previous chapter. During the survey data was collected on Beaufort sea state – a measure of the roughness of the sea (1 is “light air” with small waves, 5 “”fresh breeze&quot; with moderate waves<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>). Observers also recorded the size of each group of dolphins that were detected. We can plot these against the observed distances…
+<figure>
+<img src='distance-covardf_files/figure-html/dolphins-seastate-size-distance-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Exploratory data analysis for the effects on recorded distance of Beaufort sea state (left) and observed group size (right). Dashed lines indicate the fit of a linear model through the data (giving a slightly decreasing distance with increasing sea state and increasing distance with increasing group size. Solid lines show a LOESS smooth through the data. Note that the data shown have had the observations with the two largest observed group sizes removed.
+</figcaption>
+</figure>
+<p>The plot indicates that there is some effect of both of these covariates on the distances that we can observe dolphins at. As one might expect, the rougher the sea (i.e. higher Beaufort), the shorter distance one observes animals at (though there is an odd spike at sea state 2; left panel). For the group size, we see an increase in observed distance as the size increases (solid line is a linear fit through the data, the dashed line is a LOESS smooth <span class="citation">(Cleveland, Grosse and Shyu, 1991)</span> which highlights the steep increase at smaller group sizes (right panel). It’s worth bearing in mind that sea state and group size both affect the observed distances in different ways and the above plots are only taking two dimensional slices through their effects (e.g. small groups in choppy seas are probably not very visible but larger groups may be) – so the above plots shouldn’t be over-interpreted.</p>
+<div id="adding-covariates-into-our-models" class="section level1">
+<h1>Adding covariates into our models</h1>
+<p>The above plots plus some simple physical reasoning lead us to believe that the covariates have an effect on the detection probability – how do we include the covariates in our models though?</p>
+<p>In the half-normal detection function we looked at in the last chapter, we saw that the scale parameter (<span class="math"><em>σ</em></span>) was the only parameter of the model. Decreasing <span class="math"><em>σ</em></span> made the detection function go to zero more quickly. We might expect that the covariates had a similar effect: animals are visible at larger distances when their groups are bigger: changing the rate of the drop-off in the detection function. If we are to embed the covariate effects in the scale parameter, we could re-write the scale as: <br /><span class="math">$$
+\sigma_i = \exp\left( \beta_0 + \sum_{k=1}^K \beta_k z_{ik} \right)
+$$</span><br /> now we’re not estimating the scale parameters, but rather the <span class="math"><em>β</em><sub><em>k</em></sub></span> parameters. <span class="math"><em>β</em><sub>0</sub></span> represents a kind of “intercept” (in the sense that it’s the value that the scale parameter will take when all covariates are zero; <span class="math"><em>β</em><sub><em>k</em></sub></span> for <span class="math"><em>k</em> = 1, …, <em>K</em></span> give the parameters to be estimates for the <span class="math"><em>K</em></span> covariates, which for a given observation, <span class="math"><em>i</em></span> are <span class="math"><em>z</em><sub><em>i</em><em>k</em></sub></span>. Usually <span class="math"><em>K</em></span> is relatively small (we usually only include a couple of covariates in our model).</p>
+<p>Now we’ve seen how covariates can be justified and included from a mathematical perspective, we can see how to actually fit such a model in <code>Distance2</code>. Let’s start by fitting a model with group size as a covariate<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> :</p>
+<pre class="r"><code>hn.dolphins.size &lt;- ds(mexdolphins, truncation=8000, model=df(scale=~size))
+summary(hn.dolphins.size)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 836.0817 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##               Estimate        SE
+## (Intercept) 6.91408348 0.5091799
+## size        0.03947174 0.0193140
+## 
+##                          Estimate          SE        CV
+## Average p               0.6601482   0.0824859 0.1249506
+## Nhat in covered area 5235.9045503 255.7398782 0.0488435</code></pre>
+<p>We can see that the summary now includes an additional row of parameters, giving the effect of the parameter for group size. One way to investigate the effect of adding the size covariate graphically by plotting the fitted model:</p>
+<pre class="r"><code>plot(hn.dolphins.size)</code></pre>
+<figure>
+<img src='distance-covardf_files/figure-html/dolphins-covar-plot-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
+<figcaption>
+Figure 2: Fitted detection function for the pantropical spotted dolphin data where the size was included as a covariate. Left plot shows the detection function when size is fixed at its median value. Right plot shows the detection function evaluated with the detection function set to the 25%, 50% and 75% quantiles of group size.
+</figcaption>
+</figure>
+<p>The right panel of the plot shows that larger groups are easier to detect than smaller ones.</p>
+<p>Methods for including covariates in distance sampling detection functions have a long history (<span class="citation">Beavers and Ramsey (1998)</span> is an early contribution to this area). The beginning of a rigorous approach to such models is <span class="citation">Marques and Buckland (2003)</span>, though <span class="citation">Marques et al. (2007)</span> is somewhat more accessible.</p>
+<p>For the half-normal model we obtained an average detectability of 0.7231, where as now the average probability of detection is 0.6601. Though this is the <em>average</em> (across observed covariates)<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> detectability, for a given group size we have a different value of the detectability, mathematically we can now view the probability of detection and the detection function as functions of the covariates<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>. So now, for each observed value of a covariate we have a probability of detection. Mathematically: <br /><span class="math">$$
+\hat{p_i} = \frac{1}{w}\int_0^w g(x; \boldsymbol{\beta}, \mathbf{z}_i) \text{d}x,
+$$</span><br /> we can look at the values of <span class="math">$\hat{p_i}$</span> for our dolphin model by calling the <code>predict</code> method:</p>
+<pre class="r"><code>predict(hn.dolphins.size)</code></pre>
+<pre><code>##  [1] 0.3609790 0.9999242 0.9994546 0.9724441 0.8290257 0.7652063 0.6872192
+##  [8] 0.9999997 0.9960868 0.5988589 0.9999242 1.0000000 0.9999985 0.9999985
+## [15] 1.0000000 0.9999242 0.9999242 0.3470822 0.3208042 0.2850027 0.3470822
+## [22] 0.7652063 0.6872192 0.7652063 0.3470822 0.3084022 0.4216515 0.9999895
+## [29] 0.5074922 0.9960868 0.9987996 0.4216515 0.6872192 0.9148433 0.8052838
+## [36] 0.9987996 0.9411026 0.3470822 0.6872192 0.9999895 0.8290257 0.9991908
+## [43] 0.9999985 0.9960868 0.9873138 0.9873138 0.9724441</code></pre>
+<p>where probabilities are in order of the observations. It’s easier to look at the quantiles:</p>
+<pre class="r"><code>quantile(predict(hn.dolphins.size))</code></pre>
+<pre><code>##        0%       25%       50%       75%      100% 
+## 0.2850027 0.6430390 0.9411026 0.9996894 1.0000000</code></pre>
+<p>in both preceding results we see there is a wide range of probabilities of detection. These differences become important when using the Horvitz-Thompson-like estimator we saw in the previous chapter.</p>
+<p>We can look again at the question asked at the start of this chapter and ask how does group size affect probability of detection?</p>
+<pre class="r"><code>plot(mexdolphins$size, predict(hn.dolphins.size), xlab=&quot;Group size&quot;, ylab=&quot;Probability of detection&quot;)</code></pre>
+<figure>
+<img src='distance-covardf_files/figure-html/hn-dolphins-detection-groupsize-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 3: Probability of detection plotted against observed group size, we can see that with increasing group size, we have increasing probability of detection.
+</figcaption>
+</figure>
+<div id="estimating-abundance" class="section level2">
+<h2>Estimating abundance</h2>
+<p>To estimate abundance when covariates are included in the detection function we use the Horvitz-Thompson-like estimator, simply indexing the probabilities of detection: <br /><span class="math">$$
+\hat{N} = \sum_{i=1}^n \frac{s_i}{\hat{p_i}},
+$$</span><br /> this formula is used to calculate the <code>Nhat in covered area</code> given in the <code>summary</code> output above. As in the previous chapter we are taking each group we observed and inflating its size based on the probability of detecting that group.</p>
+<p>Using this Horvitz-Thompson-like estimator we can calculate an average detectability over the observations. This can be done by noting that if the sum were simply over the numerator of the fraction, we’d have the number of individuals observed. We can then think of the estimate of <span class="math">$\hat{N}$</span> as this number divided by some “average” detection probability, we’ll refer to this as <span class="math">$\hat{P_a}$</span> and this is the quantity given in the <code>Average p</code> given in the <code>summary</code> output above (calculated as <span class="math">$\hat{P_a} = n/\hat{N}$</span>).</p>
+</div>
+<div id="adding-and-selecting-covariates" class="section level2">
+<h2>Adding and selecting covariates</h2>
+<p>We can add the Beaufort sea state covariate into the model, alongside group size by simply adding it into the formula:</p>
+<pre class="r"><code>hn.dolphins.size.beaufort &lt;- ds(mexdolphins, truncation=8000, model=df(scale=~size+beaufort))
+summary(hn.dolphins.size.beaufort)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 838.5305 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##                Estimate         SE
+## (Intercept)  6.44005486 1.41317559
+## size         0.04460134 0.03592287
+## beaufort2    0.88159885 3.18649434
+## beaufort3    0.59084169 0.93069828
+## beaufort4    0.63115668 2.08747918
+## beaufort5   -0.77217798 0.82851833
+## 
+##                         Estimate          SE         CV
+## Average p               0.576381   0.1292324 0.22421350
+## Nhat in covered area 5557.720557 464.4983444 0.08357713</code></pre>
+<p>As Beaufort sea state is included as a factor covariate, which gives us a number of extra parameters in the model. We can see the effect of adding the covariate in a plot:</p>
+<pre class="r"><code>plot(hn.dolphins.size.beaufort)</code></pre>
+<figure>
+<img src='distance-covardf_files/figure-html/dolphins-covar-beaufort-plot-1.png' width='864'height=''width.px='864'height.px='384' style='display: block'>
+<figcaption>
+Figure 4: Fitted detection function for the pantropical spotted dolphin data where the size and Beaufort sea state were included as covariates. Left plot shows the detection function when size and Beaufort sea state are fixed at their median value; the middle plot shows the detection function with size held at its median value and Beaufort sea state varying where as the right plot shows the effect varying group size over its quantile values and fixing Beaufort sea state at its median.
+</figcaption>
+</figure>
+<p>The middle plot above shows that there is little difference in the lower sea states, but a considerable difference once we get to sea state 5, when we see a much faster decrease in probability of detection.</p>
+<p>Just as when deciding between the half-normal and hazard-rate detection functions in the previous chapter, we can use the AIC to evaluate relative model fit and goodness of fit testing/Q-Q plots to evaluate absolute model fit.</p>
+We can see some improvement in the Q-Q plot results between the model with and without the group size covariate in the following plot:
+<figure>
+<img src='distance-covardf_files/figure-html/dolphins-qq-covars-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
+<figcaption>
+Figure 5: Comparison of quantile-quantile plots for two models fitted to the spotted dolphin data. Left plot shows the model without any covariates, the right with observed group size included as a covariate. Note that the points in the right plot are much closer to the line <span class="math"><em>y</em> = <em>x</em></span>.
+</figcaption>
+</figure>
+<p>We can compare the models that we’ve fitted so far in a table, but we first fit a model with only Beaufort sea state as a covariate, so complete the set of model combinations:</p>
+<pre class="r"><code>hn.dolphins.beaufort &lt;- ds(mexdolphins, truncation=8000, model=df(scale=~beaufort))
+summary(hn.dolphins.beaufort)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 846.9741 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##                Estimate        SE
+## (Intercept)  8.32762431 0.3422926
+## beaufort2    0.83603390 2.0471889
+## beaufort3    0.35247629 0.5493890
+## beaufort4   -0.23786783 0.4975554
+## beaufort5   -0.03977453 0.4730534
+## 
+##                          Estimate           SE        CV
+## Average p               0.6781778   0.08790063 0.1296130
+## Nhat in covered area 6434.2758324 912.60499889 0.1418349</code></pre>
+<p>We can now build a table<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a> :</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Model</th>
+<th align="left">Formula</th>
+<th align="right"># pars</th>
+<th align="right"><span class="math"><em>P</em><sub><em>a</em></sub></span></th>
+<th align="right"><span class="math">CV(<em>P</em><sub><em>a</em></sub>)</span></th>
+<th align="right">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">Half-normal</td>
+<td align="left">~size</td>
+<td align="right">2</td>
+<td align="right">0.6601482</td>
+<td align="right">0.1249506</td>
+<td align="right">836.0817</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">Half-normal</td>
+<td align="left">~size + beaufort</td>
+<td align="right">6</td>
+<td align="right">0.5763810</td>
+<td align="right">0.2242135</td>
+<td align="right">838.5305</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">Half-normal</td>
+<td align="left">~1</td>
+<td align="right">1</td>
+<td align="right">0.7230935</td>
+<td align="right">0.1272423</td>
+<td align="right">842.3143</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">Half-normal</td>
+<td align="left">~beaufort</td>
+<td align="right">5</td>
+<td align="right">0.6781778</td>
+<td align="right">0.1296130</td>
+<td align="right">846.9741</td>
+</tr>
+</tbody>
+</table>
+<p>Using the table, we can see that the best model by AIC is the one with only size included as a covariate. Also note that the AIC-best model also has the lowest coefficient of variation (<span class="math">CV(<em>P</em><sub><em>a</em></sub>)</span>; in general we expect covariate models to be more precise <span class="citation">Marques et al. (2007)</span>).</p>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>In this chapter we’ve seen how adding covariates to the detection function can account for heterogeneity in the detection probability and improve precision of estimates of abundance. Covariate models make intuitive sense too, since we do not expect all individuals (or groups) in the population to have the same detectability at a given distance. This intuitive interpretation allows for direct interpretation of covariates, which may be biologically interesting. The ability to include covariates in an analysis will be particularly useful in <a href="distance-abundance.html">Adundance estimation</a>, where we will investigate stratification of abundance estimates by covariate.</p>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Beavers, S. and Ramsey, F. (1998) Detectability analysis in transect surveys. <em>Journal of Wildlife Management</em>, 948–957.</p>
+<p>Burnham, K.P., Buckland, S.T., Laake, J.L., Borchers, D.L., Marques, T.A., Bishop, J.R., et al. (2004) Further topics in distance sampling. <em>Advanced distance sampling</em> (eds S.T. Buckland), D.R. Anderson), K.P. Burnham), J.L. Laake), D.L. Borchers), &amp; L. Thomas), Oxford University Press.</p>
+<p>Cleveland, W.S., Grosse, E. and Shyu, M.W. (1991) Local regression models. <em>Statistical models in s</em> (eds J.M. Chambers), &amp; T.J. Hastie), pp. 309–376. Pacific Grove: Wadsworth; Brooks.</p>
+<p>Marques, F. and Buckland, S.T. (2003) Incorporating covariates into standard line transect analyses. <em>Biometrics</em>, <strong>59</strong>, 924–935.</p>
+<p>Marques, T.A., Thomas, L., Fancy, S. and Buckland, S.T. (2007) Improving estimates of bird density using multiple-covariate distance sampling. <em>The Auk</em>, <strong>124</strong>, 1229–1243.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The scale actually goes up to 12 (“hurricane”) and beyond, see <a href="https://en.wikipedia.org/wiki/Beaufort_scale"><a href="https://en.wikipedia.org/wiki/Beaufort_scale" class="uri">https://en.wikipedia.org/wiki/Beaufort_scale</a></a> and <a href="http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf"><a href="http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf" class="uri">http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf</a></a> for more information. One may often find that Beaufort sea state is recorded as decimals (state of 4.5 for example), it’s tricky to work out what to do with these and is worth consulting those who collected the data.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Note that a covariate called <code>size</code> has a special meaning in <code>Distance2</code> as it is used in the estimation of abundance via the Horvitz-Thompson estimator (see <a href="distance-simpledf.html">Models for detectability</a>).<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Note that when we refer to <span class="math"><em>P</em><sub><em>a</em></sub></span> as the “average detection probability”. The average is calculated over the <em>observations</em>. We used the same term for <span class="math"><em>P</em><sub><em>a</em></sub></span> in the previous chapter when talking about non-covariate models to be consistent with what is reported in <code>Distance2</code>.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>Strictly speaking we can write the probability of detection as a function of the covariates: <span class="math">$\hat{p_i}(z_i)$</span>, though the shorter <span class="math"><em>p</em><sub><em>i</em></sub></span> form is used to save space. Hopefully the subscript will be a sufficient reminder.<a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p>More details on how this was done in <a href="distance-moredf.html">Improving the fit of detection functions</a>.<a href="#fnref5">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<!-- <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>-->
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

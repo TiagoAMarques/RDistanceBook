@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Models for detectability</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">Models for detectability</h1>
+</div>
+
+
+<p>In the previous chapter we saw that when we model detectability in our surveys we can reliably estimate abundance. The previous examples were simulations, so we knew the true abundance; it’s now time to get our hands dirty with some survey data.</p>
+<p>Let’s begin by looking at data collected on <a href="http://en.wikipedia.org/wiki/Pantropical_spotted_dolphin">pantropical spotted dolphins</a> (<em>Stenella attenuata</em>) in the Gulf of Mexico<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. Data was collected by NOAA’s Southeast Fisheries Science Centre and comes from several shipboard surveys in the Gulf of Mexico during 1996 as part of the GulfCet II Program. 47 groups of pantropical spotted dolphins were observed by the crew of the <a href="http://www.moc.noaa.gov/ot/">Oregon II</a>.</p>
+<p>We can start by loading the <code>Distance2</code> package which contains both the data we want to analyse and the functions we’ll use later.</p>
+<pre class="r"><code># load the package
+library(Distance2)
+# load the dolphin data
+data(mexdolphins)</code></pre>
+<p>For now we’ll ignore the exact format of the data (which is simply a <code>data.frame</code>, we’ll investigate its other columns in the next chapter), for now we’ll concentrate on the <code>distance</code> column. Looking at a histogram of the distances, as we did previously:</p>
+<pre class="r"><code>hist(mexdolphins$distance, main=&quot;&quot;, xlab=&quot;Distance (m)&quot;)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/mex-dolphin-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Histogram of observed distances to pantropical spotted dolphins in the Gulf of Mexico.
+</figcaption>
+</figure>
+<p>As with the data we simulated in the previous chapter, we can see that there is a decrease in frequency with increasing distance from the observer (though this is a little less well behaved in reality). If the assumption of strip transect sampling were true this histogram would be flat, indicating that the dolphins could be detected with certainty.</p>
+<div id="detection-functions" class="section level2">
+<h2>Detection functions</h2>
+<p>We now want to model the decrease in the histogram of distances in order to correct the counts we have, and go on to estimate abundance.</p>
+<p>The relationship between count frequency and distance is described by a <em>detection function</em>. More formally, we model the probability that we detect an animal given that it is at a certain distance (<span class="math"><em>x</em></span>, say) from the line, mathematically: <br /><span class="math">ℙ(animal detected | animal at distance <em>x</em>)</span><br /> In general, we’ll refer to the detection function as <span class="math"><em>g</em></span>, which for now we’ll just say is a function of the distances (<span class="math"><em>x</em></span>) and its parameter(s) (generally <span class="math"><em>θ</em></span> or <span class="math">$\boldsymbol{\theta}$</span>), which we’ll estimate.</p>
+In the previous chapter, we looked at a <em>half-normal detection function</em>: <br /><span class="math">$$
+g(x; \sigma)=\exp\left(-\frac{x^2}{2\sigma^2}\right),
+$$</span><br /> here we denote the parameter we estimate as <span class="math"><em>σ</em></span>, which we call the <em>scale parameter</em> as it changes the scale of the function. We look at different possible half-normal detection functions (assuming that our distances range between 0 and 1) with some different scale parameters below:
+<figure>
+<img src='distance-simpledf_files/figure-html/hn-scale-par-comp-1.png' width='960'height=''width.px='960'height.px='288' style='display: block'>
+<figcaption>
+Figure 2: Half-normal detection functions with varying scale parameter (<span class="math"><em>σ</em></span> values are given above the plots). From left to right, the study species becomes more detectable (higher probability of detection at larger distances).
+</figcaption>
+</figure>
+<p>We’d like to have the shape of the detection function mimic the shape of the histogram; we’ll go into more detail on how that’s done below but for now let’s try to fit a detection function to the Gulf of Mexico dolphin data…</p>
+<pre class="r"><code>hn.df &lt;- ds(mexdolphins, truncation=8000)</code></pre>
+<p>The function <code>ds</code> will fit the detection function for us (to data set <code>mexdolphins</code>). We set the <code>truncation</code> to be 8000m (more on truncation below) and fit a (default) half-normal model for the detection function. Let’s see what that looks like before we examine the model in further detail:</p>
+<pre class="r"><code>plot(hn.df, main=&quot;&quot;)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/dolphins-hn-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 3: Half-normal detection function (solid black line) fitted to the Gulf of Mexico dolphin observed distances (histogram).
+</figcaption>
+</figure>
+<p>As with most R objects, we can use the <code>summary</code> method to find out further information about our fitted detection function:</p>
+<pre class="r"><code>summary(hn.df)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 842.3143 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##             Estimate        SE
+## (Intercept) 8.579708 0.2300667
+## 
+##                          Estimate           SE        CV
+## Average p               0.7230935   0.09200806 0.1272423
+## Nhat in covered area 6429.3208304 818.09665959 0.1272446</code></pre>
+<p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, parameter estimates and finally the “<code>Average p</code>” and “<code>N in covered region</code>” (along with uncertainty).</p>
+<p>It is worth noting that the parameter estimate (marked <code>(Intercept)</code>) is on the log scale, so <span class="math"><em>σ</em> = exp</span> 8.58 (why the parameters are reported in this way will become apparent in the next chapter, <a href="distance-covardf.html">What else affects detectability?</a>).</p>
+The half-normal is not the only possible detection function form (indeed, there are many options as we will see in <a href="distance-moredf.html">Improving the fit of detection functions</a>). Another possibility is the <em>hazard-rate</em> detection function, which is more flexible, but requires the estimation of an extra parameter. The plot below shows examples of hazard-rate detection functions.
+<figure>
+<img src='distance-simpledf_files/figure-html/hr-par-comp-1.png' width='960'height=''width.px='960'height.px='288' style='display: block'>
+<figcaption>
+Figure 4: Hazard-rate detection function with varying scale and shape parameters (given above each plot). Compared to the half-normal, the hazard-rate as a more prominent “shoulder”.
+</figcaption>
+</figure>
+<p>Mathematically the hazard-rate detection function is defined as: <br /><span class="math">$$
+g(x; \sigma, b)=1-\exp\left(-\left(\frac{x}{\sigma}\right)^{-b}\right).
+$$</span><br /> The hazard-rate detection function has two parameters: <span class="math"><em>σ</em></span>, the scale parameter as in the half-normal and <span class="math"><em>b</em></span>, which is called the <em>shape</em> parameter. The role of the shape parameter is to control the size of the <em>shoulder</em> of the detection function – how far detection remains certain. We can see it’s effect in comparing between plots where <span class="math"><em>b</em> = 5</span> and <span class="math"><em>b</em> = 1</span>, a larger <span class="math"><em>b</em></span> gives a longer distance out to which we observe animals with certainty.</p>
+<p>We can fit a hazard-rate detection function to the dolphin data in a similar way to half-normal, though now we must specify a detection function model:</p>
+<pre class="r"><code>hr.df &lt;- ds(mexdolphins, truncation=8000, model=df(model=~hr))</code></pre>
+<p>we can then plot this, as before:</p>
+<pre class="r"><code>plot(hr.df)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/dolphins-hr-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 5: Hazard-rate detection function (solid black line) fitted to the Gulf of Mexico dolphin observed distances (histogram).
+</figcaption>
+</figure>
+<p>We can again use the <code>summary</code> function:</p>
+<pre class="r"><code>summary(hr.df)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 842.1967 
+## 
+## Detection function     : Hazard-rate 
+## 
+## Detection function parameters
+##             Estimate        SE
+## (Intercept) 7.945285 0.9700149
+## shape       0.000000 0.7602676
+## 
+##                          Estimate           SE        CV
+## Average p               0.5754871    0.2206894 0.3834828
+## Nhat in covered area 8078.3740246 3097.9273281 0.3834840</code></pre>
+<p>Note that there are now two rows of parameters, one for scale and then one for shape.</p>
+<p>The hazard-rate model has a rather different average detection probability from the half-normal model (0.5755 rather than 0.7231 for the half-normal) and hence rather different abundance estimates. How do we decide between these two models?</p>
+</div>
+<div id="what-makes-a-good-detection-function" class="section level2">
+<h2>What makes a “good” detection function?</h2>
+<p>In general, we’d like to fit a number of different detection functions, choose the best and use that for our subsequent inference. In order to choose which detection function is “best”, we must first define what we mean by “best”. One can view this as a three stage process:</p>
+<ol style="list-style-type: decimal">
+<li>amongst the candidate models, which are “reasonable”,</li>
+<li>perform goodness of fit testing on the reasonable models,</li>
+<li>amongst those reasonable models with good goodness of fit, which is the best?</li>
+</ol>
+<div id="reasonable-models" class="section level3">
+<h3>Reasonable models</h3>
+<p>First we need to ensure that the models that we are comparing are “reasonable”. What I mean by this is they pass the following checks:</p>
+<ul>
+<li><strong>Biologically reasonable</strong>: It’s important, before fitting models, to ensure that models are biologically plausible. Rexstad and coauthors <span class="citation">(1988)</span> show that one can easily construct datasets of covariates that predict the phenomena of interest well but are actually totally unrelated. Although their example is deliberately silly, it highlights an important principle: avoiding a modelling philosophy of “throw everything in and see what happens”. This will be particularly pertinent in <a href="distance-covardf.html">What else affects detectability?</a>, when we talk about factors other than distance that affect detectability.</li>
+<li><strong>Convergent</strong>: It is sometimes the case that when fitting a model, an warning will be reported about the optimisation not having converged. In this case the results are not necessarily reliable. We’ll cover troubleshooting such models in <a href="distance-moredf.html">Improving the fit of detection functions</a>, offering some ways to fix non-convergent models. For now, let’s just say that it’s generally a bad idea to include such models in the model selection process.</li>
+<li><strong>Eyeball test</strong>: Inspecting fitted model plots can tell you a lot. One should not underestimate the amount of information that can be gleaned from simply plotting the detection function. It is possible that a model can converge but with rather “wacky” parameters leaving a model that doesn’t resemble the data at all. Ensuring that such models are investigated (again, more in this in <a href="distance-moredf.html">Improving the fit of detection functions</a>) and excluded is another important step towards model selection.</li>
+</ul>
+</div>
+<div id="goodness-of-fit-testing" class="section level3">
+<h3>Goodness of fit testing</h3>
+<p>Goodness of fit testing involves measuring discrepancies in how the model describes the data and the data themselves. Goodness of fit tests give <strong>absolute</strong> measure of model fit.</p>
+<p>Three statistical tests are commonly used to assess goodness of fit for detection functions, these are: <span class="math"><em>χ</em><sup>2</sup></span>, Kolmogorov-Smirnov and Cramer-von Mises tests. The latter two tests are based on quantifying the results of quantile-quantile plots (Q-Q plots), so we’ll talk about them first.</p>
+<div id="q-q-plots" class="section level4">
+<h4>Q-Q plots</h4>
+<p>A Q-Q plot allows us to graphically assess how similar samples from two distributions are. To judge goodness of fit for detection functions, we are interested in comparing the cumulative distribution function (CDF) and empirical distribution function (EDF). The CDF (of the detection function) evaluates the probability of observing an animal at a distance less than or equal to a given value (<span class="math"><em>x</em></span>, say); we usually denote the CDF as <span class="math"><em>F</em>(<em>x</em>)</span>. The empirical distribution function gives the proportion of observations for which the CDF is less than or equal to that of a given distance. In other words, we’re judging whether the number of observations up to a given distance are in line with what the model says they should be. The “given values” that we use are the observed distances. If our model fits well then we should have agreement between these two measures so plotting them against each other should lead to a straight line at <span class="math"><em>y</em> = <em>x</em></span>. Points above the line indicate that the model thinks there should be more observations than there were, points below the line indicate that there were more observations than the model thinks.</p>
+<p>We can plot a Q-Q plot for our fitted detection functions using the <code>gof_tests</code> function in <code>Distance2</code>:</p>
+<pre class="r"><code>gof_tests(hn.df)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/dolphin-hn-gof-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 6: Quantile-quantile plot for the half-normal detection function fitted to the dolphin data.
+</figcaption>
+</figure>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.16713 
+##   p-value        : 0.14472 
+## Cramer-von Mises test:
+##   Test statistic : 0.17416 
+##   p-value        : 0.32367</code></pre>
+<p>The function also prints out some statistics for the two tests we’ll investigate next. First let’s look at the plot. The grey line indicates the <span class="math"><em>y</em> = <em>x</em></span> line, we can see that there seem to be rather more points below that line than above, this indicates that we may have a problem with our model fit. To further investigate this we need to formalise what we mean by “far from the line <span class="math"><em>y</em> = <em>x</em></span>”, which we’ll achieve by looking at two statistical tests.</p>
+</div>
+<div id="kolmogorov-smirnov-test" class="section level4">
+<h4>Kolmogorov-Smirnov test</h4>
+<p>We can see from the above Q-Q plot that there are some deviations from the line <span class="math"><em>y</em> = <em>x</em></span>. The Kolmogorov-Smirnov test asks the question “what’s the largest vertical distance between a point and the <span class="math"><em>y</em> = <em>x</em></span> line?” It uses this distance as a statistic to test the null hypothesis that the samples (EDF and CDF in our case) are from the same distribution (and hence our model fits well). If the deviation between the <span class="math"><em>y</em> = <em>x</em></span> line and the points is too large we reject the null hypothesis and say the model doesn’t have a good fit. The <span class="math"><em>p</em></span>-value for the test is given in the <code>gof_tests</code> output and is 0.1447, telling us that the deviation is not too severe.</p>
+</div>
+<div id="cramer-von-mises-test" class="section level4">
+<h4>Cramer-von Mises test</h4>
+<p>Rather than looking at the single biggest difference between the <span class="math"><em>y</em> = <em>x</em></span> line and the points in the Q-Q plot, we might prefer to think about all the differences between line and points, since there may be many smaller differences that we want to take into account rather than looking for one large deviation. In this case the Cramer-von Mises test can help us. Its null hypothesis is the same, but the statistic it uses is the sum of the deviations from each of the point to the line. For the half-normal detection function we can see above that the <span class="math"><em>p</em></span>-value (of 0.3237) also doesn’t indicate that the deviations are too far.</p>
+<p>To illustrate these ideas further, we can perform the goodness of fit testing for the hazard-rate model:</p>
+<pre class="r"><code>gof_tests(hr.df, plot=FALSE)</code></pre>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.11125 
+##   p-value        : 0.60588 
+## Cramer-von Mises test:
+##   Test statistic : 0.09027 
+##   p-value        : 0.63469</code></pre>
+<p>Note that using the <code>plot=FALSE</code> argument, we can prevent the plot from being shown and just give the test statistics and <span class="math"><em>p</em></span>-values. The output for the hazard-rate model gives us some weak evidence that the distributions of the CDF and EDF are not the same. The Cramer-von Mises test is more powerful (since we are using more information in calculating its statistic), so we should usually pay it more attention.</p>
+<p>The next plot shows the Q-Q plot for the hazard-rate model, with the Kolmogorov-Smirnov test statistic highlighted in blue and the differences used in the calculation of the Cramer-von Mises statistic highlighted in red.</p>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.11125 
+##   p-value        : 0.60588 
+## Cramer-von Mises test:
+##   Test statistic : 0.09027 
+##   p-value        : 0.63469</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/dolphin-hr-gof-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 7: Quantile-quantile plot for the hazard-rate detection function fitted to the dolphin data. The blue line is the Kolmogorov-Smirnov test statistic; the red lines (and blue line) are used in the calculation of the Cramer-von Mises statistic.
+</figcaption>
+</figure>
+<p>The results from the goodness of fit tests show that neither of our proposed detection functions lead to a particularly poor fit. We therefore go on to think about comparing the models to each other.</p>
+<p><em><span class="math"><em>χ</em><sup>2</sup></span> tests have been omitted here. They’re most appropriate for binned data, so we’ll come back to them when we look at binning distances later on.</em></p>
+</div>
+</div>
+<div id="model-selection-by-aic" class="section level3">
+<h3>Model selection by AIC</h3>
+<p>Once we have a reasonable set of models, we want to be able to rank them in order of how well they represent the data. It is relatively easy to ensure that the model fits the data too well (as, in theory at least, we can make our model for the detection function arbitrarily complex and reproduce the histogram of distances). To avoid this, we can penalise our measure of model fit (the <em>log likelihood</em>) based on the number of parameters we use – making us justify the use of the extra complexity by an appropriately-sized payoff in fit. Akaike’s Information Criterion (AIC) is the metric that we’ll use to perform model selection for the detection function. This ensures that we pick models that represent the data well while ensuring we have parsimonious models. In contrast to goodness of fit testing, AIC only gives a <strong>relative</strong> measure of model fit.</p>
+<p>We see the AIC reported for the two models above in their summaries. We can also access the AIC via the <code>$AIC</code> element of the model object:</p>
+<pre class="r"><code>hn.df$AIC</code></pre>
+<pre><code>## [1] 842.3143</code></pre>
+<pre class="r"><code>hr.df$AIC</code></pre>
+<pre><code>## [1] 842.1967</code></pre>
+<p>A smaller AIC is better, but if the AICs are closer than 2 and differ by only one parameter (as we see in the two detection functions above), we can discard the more complex model as it only marginally decreases the AIC at the cost of one additional parameter: hardly parsimonious. Based on this, we can discard the hazard-rate model, leaving the half-normal as our chosen detection function at this point.</p>
+<p>In <a href="distance-moredf.html">Improving the fit of detection functions</a> we’ll look at the <code>summarize_models</code> function in <code>Distance2</code> that can be used to summarise results from many models in a table.</p>
+<p>At this point it’s worth noting that we’re never interested in the absolute values of the AIC, but rather the different between the best candidate model’s AIC and the others. Articles will often include tables with a column labelled <span class="math">Δ</span>AIC containing these differences. Burnham and Anderson <span class="citation">(2002)</span> is a thorough treatment of AIC in an ecological modelling context, as well as a more philosophical guide on statistical modelling.</p>
+</div>
+</div>
+<div id="model-outputs" class="section level1">
+<h1>Model outputs</h1>
+<p>Having selected the half-normal model, we can return to the <code>summary</code> results above. The last two rows of the summary report statistics about <code>Average p</code> and <code>Nhat in covered region</code>; we now investigate these quantities.</p>
+<div id="average-detectability" class="section level2">
+<h2>Average detectability</h2>
+<p>With a fitted detection function we can evaluate the probability of observing an animal given its distance (from the definition of the detection function, <span class="math"><em>g</em></span>) but, what we’d rather know is the probability of detecting an animal on average (since our aim is to make inference about the population of animals, rather than a single observation in particular). To do this we want to integrate distance out of the detection function – removing the conditioning on the distance.</p>
+<p>Before we do that, it’s important to remember that in order to do distance sampling we have to make some assumption about the distribution of the animals with respect to the transects. If we design our survey well we can assume that animals are <em>uniformly distributed with respect to the transect</em> – meaning there not “clumps” of animals at certain distances<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>. We denote the distribution of all animals with respect to the transect with <span class="math"><em>π</em><sub><em>y</em></sub>(<em>y</em>)</span> in general. For line transects, we let <span class="math"><em>π</em><sub><em>x</em></sub>(<em>x</em>) = 1/<em>w</em></span> (since we are assuming the distribution is uniform between 0 and the truncation distance). We need to include this assumption in our calculation of average detectability.</p>
+<p>Denoting the average probability of detection as <span class="math">$\hat{P_a}$</span>, for line transects we can write<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> : <br /><span class="math">$$
+\hat{P_a} = \frac{1}{w}\int_0^w g(x;\boldsymbol{\theta}) \text{d}x
+$$</span><br /> where <span class="math"><em>w</em></span> denotes the truncation distance (which we set to 8000m). For the pantropical dolphins we obtain <span class="math">$\hat{P_a}=$</span> 0.7231 (see also the output of the <code>summary</code>, under <code>Average p</code>/<code>Estimate</code>).</p>
+</div>
+<div id="abundance-in-covered-area" class="section level2">
+<h2>Abundance in covered area</h2>
+<p>Although the average probability of detection is an interesting quantity in its own right, we are primarily interested in estimating abundance. The row <code>Nhat in covered area</code> gives an estimate of the number of animals in the covered area (that is, the area we actually surveyed – the area we covered by transects out to the truncation distance). To compute this abundance estimate (which we’ll denote <span class="math">$\hat{N}$</span>) we use a <em>Horvitz-Thompson-like estimator</em> <span class="citation">(Thompson, 2002)</span>, which one can think of as “correcting” the size of the observations based on the probability of detection. That is, if we saw 1 dolphin in this study, we should actually inflate this count by <span class="math">$1/\hat{P_a}$</span> to estimate abundance.</p>
+<p>The Horvitz-Thompson estimator is defined as: <br /><span class="math">$$
+\hat{N} = \sum_{i=1}^n \frac{s_i}{\hat{P_a}},
+$$</span><br /> where <span class="math"><em>s</em><sub><em>i</em></sub></span> is the size of the group of the <span class="math"><em>i</em><sup>th</sup></span> observation. So for each group (or individual) we saw, inflate them by <span class="math"><em>P</em><sub><em>a</em></sub></span>, then sum up over the groups<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
+<p>In the dolphin data group size ranges from 15 to 650. We can look at a histogram of the observed group sizes:</p>
+<pre class="r"><code>hist(mexdolphins$size, main=&quot;&quot;, xlab=&quot;Observed group size&quot;, breaks=seq(0, 700, by=25))</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/dolphins-size-hist-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 8: Histogram of observed group sizes of dolphins in the Gulf of Mexico. Most groups are in the size range 15-200, but there are a few much larger groups, these have a much larger effect on the Hovitz-Thompson estimator.
+</figcaption>
+</figure>
+<p>The Horvitz-Thompson-like estimator above is used in the <code>summary</code> of the model so calculate the abundance in the covered area. We may also want to extrapolate and estimate abundance in a larger area outside where we covered (though still within reasonable geographic/environmental limits of the area covered by the surveys). We’ll cover this in detail in <a href="distance-abundance.html">Adundance estimation</a>.</p>
+</div>
+</div>
+<div id="point-transects" class="section level1">
+<h1>Point transects</h1>
+<p>So far we’ve looked at the dolphin data from the Gulf of Mexico, a line transect survey. Now let’s look at point transect data and show that fitting a detection function to that data and estimating abundance is not significantly different.</p>
+<p>We’ll be looking at data consisting of 1485 observations of <a href="https://en.wikipedia.org/wiki/Hawai%CA%BBi_%CA%BBamakihi">amakihi</a> (<em>Hemignathus virens</em>), a bird species native to Hawaii<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>. Data were collected as part of a larger survey (of many species) on the island of Hawaii. The surveys were performed over 7 periods between July 1992 and April 1995. There were 41 point transects, although they were not all surveyed every time.</p>
+<p>As for the dolphins we can again load the data, which is bundled with <code>Distance2</code>:</p>
+<pre class="r"><code>data(amakihi)</code></pre>
+<p>Plotting the histogram of observed distances:</p>
+<pre class="r"><code>hist(amakihi$distance, main=&quot;&quot;, xlab=&quot;Distance (m)&quot;)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/amakihi-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 9: Histogram of observed distances to amakihi observations.
+</figcaption>
+</figure>
+<p>The histogram is the shape we saw in the previous chapter, an increase up to a point (due to the geometry of the sampler), then a drop off after that point. We also notice that unlike the dolphin example, the observed distances trail off rather more gradually, with a few distances higher than 200m (the median observed distance is 45). We probably don’t want to model the long tail in the distances as they are likely outliers, so we will <em>truncate</em> the data. Before we do let’s see what happens when we don’t truncate.</p>
+<pre class="r"><code>hn.df.notrunc &lt;- ds(amakihi, transect=&quot;point&quot;)</code></pre>
+<pre><code>## Warning in check_truncation(truncation, data): No truncation supplied,
+## using maximum distance</code></pre>
+<p>Notice two differences here in our call to <code>ds</code>: we supply <code>transect=&quot;point&quot;</code> to tell <code>ds</code> that our model is of point transect data and that we didn’t include a <code>truncation</code>. When we don’t supply a truncation distance <code>ds</code> uses the largest observed distance and warns us that is happening.</p>
+<p>We can again look at summary information for the fitted model</p>
+<pre class="r"><code>summary(hn.df.notrunc)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : point 
+## Number of observations : 1485 
+## Distance range         : 0 - 250 
+## AIC                    : 14201.9 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##             Estimate          SE
+## (Intercept) 3.742683 0.009661874
+## 
+##                          Estimate           SE         CV
+## Average p            5.701686e-02 1.101779e-03 0.01932374
+## Nhat in covered area 2.604493e+04 8.270700e+02 0.03175551</code></pre>
+<p>We estimate $P_a=$0.057. This time we use <span class="math"><em>π</em><sub><em>r</em></sub>(<em>r</em>) = 2<em>r</em>/<em>w</em><sup>2</sup></span>, so <br /><span class="math">$$
+\hat{P_a} = \frac{2}{w^2}\int_0^w r g(r;\boldsymbol{\theta}) \text{d}r,
+$$</span><br /> for point transects.</p>
+<p>As for line transects we can plot the resulting model along with goodness of fit information:</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(hn.df.notrunc, xlab=&quot;Distance (m)&quot;, main=&quot;&quot;)
+gof_tests(hn.df.notrunc)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/amakihi-notrunc-plot-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
+<figcaption>
+Figure 10: Plots of a half-normal detection function fitted to the amakihi point transect data. Left: the fitted detection function with histogram of distances (rescaled according to the change in area due to point transect sampler geometry); the detection function drops to zero at around 150m. Right: quantile-quantile plot, showing that the model does not fit well (many dots below the line <span class="math"><em>y</em> = <em>x</em></span>).
+</figcaption>
+</figure>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.09307 
+##   p-value        : 0 
+## Cramer-von Mises test:
+##   Test statistic : 3.99489 
+##   p-value        : 1e-05</code></pre>
+<p>We can see that many points lie below the line <span class="math"><em>y</em> = <em>x</em></span>, indicating that the model thinks there should be fewer observations up to each distance than were observed (the <span class="math"><em>p</em></span>-values of the goodness of fit tests also reflect this). This, combined with the detection function going to zero well before the truncation, at a little less than 150m (largest observed distance was 250m).</p>
+<p>Note that the histogram plotted with the detection function here has been rescaled to take into account the increasing area searched with increasing radial distance. We can plot the fitted model’s probability density function with the unscaled histogram by supplying the <code>pdf=TRUE</code> option to <code>plot</code>:</p>
+<pre class="r"><code>plot(hn.df.notrunc, xlab=&quot;Distance (m)&quot;, pdf=TRUE, main=&quot;&quot;)</code></pre>
+<figure>
+<img src='distance-simpledf_files/figure-html/amakihi-notrunc-plot-pdf-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 11: Plot of the probability density function for the model fitted to the amakihi data with histogram of observations.
+</figcaption>
+</figure>
+<p>We can see the density for distances greater than 150m is very small.</p>
+<div id="truncation" class="section level2">
+<h2>Truncation</h2>
+<p>Given the poor goodness of fit results, we can truncate the data to improve the fit of the detection function. A perennial question in distance sampling is “at what distance do I truncate?”</p>
+<p>We’d rather not throw-away too much of our (or our field workers’) hard-earned data – only enough to improve the fit of our model. There is no general rule for when and where to truncate however Buckland et al <span class="citation">(Buckland et al., 2001)</span> suggest for line transects that a truncation is chosen such that <span class="math"><em>g</em>(<em>w</em>) ≈ 0.15</span> (p. 103) and for point transect (due to the aforementioned geometry considerations) we choose the truncation such that <span class="math"><em>g</em>(<em>w</em>) ≈ 0.1</span> (p. 151). These rules of thumb may or may not make sense in a given situation, for example for the pantropical dolphins we didn’t truncate at the analysis stage, as it appeared that truncation had occurred during data collection (there are no “outliers” as there are for the amakihi data).</p>
+<p>A typical procedure to ensure that the truncation used is “right” is to fit many models with different truncation and try to ensure that the truncation you choose has good goodness of fit results and few (or no) outliers.</p>
+<p>We’ll try compare two further truncation distances, one at 150m, and one at 82.5m as used in <span class="citation">(Marques et al., 2007)</span>.</p>
+<pre class="r"><code>hn.df.trunc.150 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=150)
+hn.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5)</code></pre>
+<p>Having fitted the models, we can again compare summaries and goodness of fit, along with detection function plots.</p>
+<pre class="r"><code>summary(hn.df.trunc.150)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : point 
+## Number of observations : 1474 
+## Distance range         : 0 - 150 
+## AIC                    : 13898.02 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##             Estimate         SE
+## (Intercept) 3.707559 0.01210836
+## 
+##                          Estimate           SE         CV
+## Average p               0.1474673 3.543475e-03 0.02402889
+## Nhat in covered area 9995.4394977 3.398109e+02 0.03399659</code></pre>
+<pre class="r"><code>summary(hn.df.trunc.82.5)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : point 
+## Number of observations : 1243 
+## Distance range         : 0 - 82.5 
+## AIC                    : 10833.84 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##             Estimate         SE
+## (Intercept) 3.580267 0.02011161
+## 
+##                          Estimate           SE         CV
+## Average p               0.3514386   0.01127421 0.03208017
+## Nhat in covered area 3536.8910332 139.28834431 0.03938158</code></pre>
+<p>Although there is not a large change in parameter estimate between the two models, this (along with the change in truncation) does lead to a large difference in the average detectability and therefore abundance estimate. Note that we can’t compare the AICs of models with different truncations, as the models use different data.</p>
+<figure>
+<img src='distance-simpledf_files/figure-html/amakihi-trunc-plots-1.png' width='864'height=''width.px='864'height.px='864' style='display: block'>
+<figcaption>
+Figure 12: Plots of a half-normal detection function fitted to the amakihi point transect data at two different truncation distances: 150m on the left and 82.5m on the right. Top row shows the fitted detection function with histogram of distances. Bottom row shows quantile-quantile plots.
+</figcaption>
+</figure>
+<p>We can see that the quantile-quantile plots are much improved when truncation is set at 82.5m (right side), points are closer to the line <span class="math"><em>y</em> = <em>x</em></span>. Though, looking at the goodness of fit test results, we don’t see a very compelling story for this model.</p>
+<pre class="r"><code>gof_tests(hn.df.trunc.82.5, plot=FALSE)</code></pre>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.05934 
+##   p-value        : 0.00032 
+## Cramer-von Mises test:
+##   Test statistic : 0.93083 
+##   p-value        : 0.00358</code></pre>
+<p>At this point we’ll stop looking at the truncation and turn back to detection function model selection and compare the half-normal with hazard-rate model, keeping the truncation at 82.5m.</p>
+<pre class="r"><code>hr.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5, model=df(model=~hr))
+summary(hr.df.trunc.82.5)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : point 
+## Number of observations : 1243 
+## Distance range         : 0 - 82.5 
+## AIC                    : 10807.55 
+## 
+## Detection function     : Hazard-rate 
+## 
+## Detection function parameters
+##              Estimate         SE
+## (Intercept) 3.4545394 0.06311553
+## shape       0.8342906 0.06533068
+## 
+##                          Estimate           SE         CV
+## Average p               0.3285788   0.02013387 0.06127561
+## Nhat in covered area 3782.9583996 247.91691631 0.06553519</code></pre>
+We can see that this model has a much better AIC than the half-normal model (hazard-rate: 10807.55, versus 10833.84 for half-normal). Plotting the detection function and performing goodness of fit tests indicates that this model is much better than the half-normal.
+<figure>
+<img src='distance-simpledf_files/figure-html/amakihi-hr-trunc-plots-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
+<figcaption>
+Figure 13: Plots of a hazard-rate detection function fitted to the amakihi point transect data. Left plot shows the fitted detection function with histogram of distances and the right shows quantile-quantile plots.
+</figcaption>
+</figure>
+<pre><code>## Goodness of fit testing for distance sampling model
+## 
+## Kolmogorov-Smirnov test:
+##   Test statistic : 0.03731 
+##   p-value        : 0.06281 
+## Cramer-von Mises test:
+##   Test statistic : 0.16984 
+##   p-value        : 0.3344</code></pre>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>This chapter shown how detection functions are fitted in <code>Distance2</code> and how to select a detection function. We covered both line and point transects as well as how to select the truncation distance.</p>
+<p>In the next chapter we’ll look at different models for the detection function and how we can use additional data to model detectability when it relies on other variables as well as distance.</p>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Buckland, S.T., Anderson, D.R., Burnham, K.P., Laake, J.L., Borchers, D.L. and Thomas, L. (2001) <em>Introduction to Distance Sampling</em>. Oxford University Press.</p>
+<p>Burnham, K.P. and Anderson, D.R. (2002) <em>Model Selection and Multimodel Inference</em>. Springer Science &amp; Business Media.</p>
+<p>Cox, M.J., Borchers, D.L., Demer, D.A., Cutter, G.R. and Brierley, A.S. (2011) Estimating the density of Antarctic krill (Euphausia superba) from multi-beam echo-sounder observations using distance sampling methods. <em>Journal of the Royal Statistical Society-Series C Applied Statistics</em>, <strong>60</strong>, 301–316.</p>
+<p>Marques, T.A., Buckland, S.T., Bispo, R. and Howland, B. (2012) Accounting for animal density gradients using independent information in distance sampling surveys. <em>Statistical Methods &amp; Applications</em>, <strong>22</strong>, 67–80.</p>
+<p>Marques, T.A., Buckland, S.T., Borchers, D.L., Tosh, D. and McDonald, R.A. (2010) Point Transect Sampling Along Linear Features. <em>Biometrics</em>, <strong>66</strong>, 1247–1255.</p>
+<p>Marques, T.A., Thomas, L., Fancy, S. and Buckland, S.T. (2007) Improving estimates of bird density using multiple-covariate distance sampling. <em>The Auk</em>, <strong>124</strong>, 1229–1243.</p>
+<p>Rexstad, E.A., Miller, D., Flather, C., Anderson, E., Hupp, J. and Anderson, D.R. (1988) Questionable multivariate statistical inference in wildlife habitat and community studies. <em>The Journal of Wildlife Management</em>, <strong>52</strong>, 794–798.</p>
+<p>Thompson, S.K. (2002) <em>Sampling</em>, 2nd ed. Wiley.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>For convenience the data are bundled in an R-friendly format, although all of the code necessary for creating the data from the Distance project files is available at <a href="http://github.com/dill/mexico-data">github.com/dill/mexico-data</a>. The original OBIS-SEAMAP page for the data may be found at the <a href="http://seamap.env.duke.edu/dataset/25">SEFSC GoMex Oceanic 1996 survey page</a>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>One such problem is when line transects are positioned to run parallel to some geographical feature that attracts animals (e.g. hedgerows). A number of articles try to address issues arising from such surveys by modelling the effect of the feature <span class="citation">(Marques et al., 2010, <span class="citation">Cox et al. (2011)</span>, <span class="citation">Marques et al. (2012)</span>)</span>.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>More generally, we’d write <span class="math">$\hat{P_a} = \int_0^w g(y;\boldsymbol{\theta}) \pi_y(y) \text{d}y$</span>.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>For now we’re assuming that we were able to count the group size accurately, though this can be a serious problem especially in marine surveys. We’ll revisit this topic when we talk about spatial modelling in the second part of the book.<a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p>Data are again bundled with <code>Distance2</code>. Thanks go to Steven Fancy of the National Parks Service for providing the data. A more detailed analysis is provided in the associated paper <span class="citation">(Marques et al., 2007)</span>.<a href="#fnref5">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<!-- <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>-->
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
