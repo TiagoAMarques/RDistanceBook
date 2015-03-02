@@ -178,40 +178,13 @@ img {
 </div>
 
 
-<p>In this first chapter I want to give a brief refresher on distance sampling, building up from simpler sampling techniques to show how they relate to distance sampling. I’ll show this via some simulations in R. Understanding the code is not as important as understanding the concepts, but it’ll help.</p>
+<p>In this first chapter I want to give a brief refresher on distance sampling, building up from simpler sampling techniques to show how they relate to distance sampling. I’ll show this via some simulations in R. (Understanding the code is not as important as understanding the concepts, but it’ll help; the source for this document can be found <a href="https://github.com/dill/RDistanceBook/blob/master/distance/distance-intro.Rmd">here</a>, showing how the plots were made).</p>
 <p>Before diving into the sampling we should first think a little about why we’re doing distance sampling. Really what we are interested in is estimating the abundance of some biological population. Knowing how many animals (or plants) there are in a given area can tell us important management information as well as help to answer ecological questions.</p>
 <p>Since we are interested in abundance, it is important to ensure that the estimates of abundance are as accurate as possible. Our estimates of abundance will always be based on the observed counts – how many animals we saw. We may also want to think about what other factors affected that count, and model the <em>observation process</em> (contrast this to the paragraph about, where we were thinking about modelling the abundance as a function of environmental factors). There are many factors that can affect whether we see an animal, for example: how far away animals are, how brightly coloured they are, whether the observers are fresh grad students or older, seasoned field biologists. We might also like to think about whether animals are there to be seen at all – have cetaceans or seabirds dived and are now too deep to be detected?</p>
 <p>The rest of this chapter will show how common survey techniques (quadrat and strip sampling) generalise into distance sampling methodology using a simple simulation in R.</p>
 <div id="why-distance-sampling" class="section level2">
 <h2>Why distance sampling?</h2>
 <p>Let’s first consider a simple example of a simulated population. Each point in the plot below represents an individual in our population – for simplicity’s sake let’s call them animals. One simple option to estimate how many animals there are in the study area (in our case the square from 0 to 1 in <span class="math"><em>x</em></span> and <span class="math"><em>y</em></span> directions) would be to survey quadrats (boxes) that were randomly placed within the region, count all the animals in each box.</p>
-<pre class="r"><code>set.seed(131) # same results every time
-library(mgcv) # for inSide</code></pre>
-<pre><code>## Loading required package: nlme
-## This is mgcv 1.8-4. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
-<pre class="r"><code>N &lt;- 500
-# generate population locations
-x &lt;- runif(N)
-y &lt;- runif(N)
-# plot it
-plot(x,y, pch=19,asp=1,cex=0.4,main=&quot;&quot;,col=&quot;grey&quot;)
-
-# generate some quadrats
-quadrat &lt;- list(x=c(0,0,0.1,0.1,0),y=c(0,0.1,0.1,0,0))
-n &lt;- 0
-for(i in 1:10){
-  # randomly place a quadrat (and plot it)
-  this.quadrat &lt;- quadrat
-  this.quadrat$x &lt;- this.quadrat$x + runif(1)
-  this.quadrat$y &lt;- this.quadrat$y + runif(1)
-  polygon(this.quadrat, lty=2, border=&quot;blue&quot;)
-  # see which points are inside
-  inout &lt;- inSide(this.quadrat, x, y)
-  # count them
-  n &lt;- n + sum(inout)
-  # plot the points inside the quadrat in red
-  points(x[inout], y[inout], pch=19, cex=0.4, col=&quot;red&quot;)
-}</code></pre>
 <figure>
 <img src='distance-intro_files/figure-html/unnamed-chunk-2-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
@@ -229,28 +202,6 @@ A &lt;- 1
 Nhat &lt;- D*A</code></pre>
 <p>This estimator gives us an estimated abundance (<span class="math">$\hat{N}$</span>) of 520, relatively close to the true value of 500 (<code>N</code> in the above code).</p>
 <p>To simplify data collection from a logistical point of view, it seems simpler to have observers traverse lines and observe strips rather than have them walk between randomly placed squares. Using a regular grid of strips (offset randomly) allows observers to move from one strip to the next most efficiently.</p>
-<pre class="r"><code>plot(x,y, pch=19,asp=1,cex=0.4,main=&quot;&quot;,col=&quot;grey&quot;)
-
-# zero the count from last time
-n &lt;- 0
-
-# generate some strips
-# in this case we don&#39;t randomise the offset of the grid
-strip &lt;- list(x=c(-0.0125,-0.0125,0.0125,0.0125,-0.0125), y=c(0,1,1,0,0))
-strip$x &lt;- strip$x + 0.1
-for(i in 1:5){
-  # plot the strip and its centreline
-  polygon(strip, lty=2, border=&quot;blue&quot;)
-  lines(rep(mean(range(strip$x)),2), c(0,1), col=&quot;blue&quot;)
-  # see what was inside the strip
-  inout &lt;- inSide(strip,x,y)
-  # count them
-  n &lt;- n + sum(inout)
-  # plot those animals within the strip
-  points(x[inout], y[inout], pch=19, cex=0.4, col=&quot;red&quot;)
-  # calculate next strip location
-  strip$x &lt;- strip$x+0.2
-}</code></pre>
 <figure>
 <img src='distance-intro_files/figure-html/unnamed-chunk-3-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
@@ -279,29 +230,6 @@ Figure 3: Example of a half-normal detection function where <span class="math"><
 </figcaption>
 </figure>
 <p>The larger the <span class="math"><em>σ</em></span> the more likely we are to see animals at large distances. We’ll look at this relationship in more detail in the next chapter, <a href="distance-simpledf.html">Models for detectability</a>.</p>
-<pre class="r"><code>plot(x,y, pch=19,asp=1,cex=0.4,main=&quot;&quot;,col=&quot;grey&quot;)
-
-# generate some lines
-# in this case we don&#39;t randomise the offset of the grid
-lt &lt;- list(x=c(-0.0125,-0.0125,0.0125,0.0125,-0.0125), y=c(0,1,1,0,0))
-# set sigma
-sigma &lt;- 0.01
-# storage for detected distances
-detected_distances &lt;- c()
-for(i in 1:5){
-  # calculate next strip location
-  lt$x &lt;- lt$x+0.15
-  # plot the line transect
-  lines(x=rep(mean(range(lt$x)),2), y=c(0,1), col=&quot;blue&quot;,lty=2)
-  # calculate the distances to animals from the line
-  distances &lt;- abs(lt$x - x)
-  # randomly decide which were detected
-  detected &lt;- exp(-distances^2/(2*sigma^2)) &gt; runif(length(distances))
-  # plot those animals detected
-  points(x[detected], y[detected], pch=19, cex=0.4, col=&quot;red&quot;)
-  # collect the distances to detected objects
-  detected_distances &lt;- c(detected_distances, distances[detected])
-}</code></pre>
 <figure>
 <img src='distance-intro_files/figure-html/unnamed-chunk-4-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
@@ -327,29 +255,8 @@ $$</span><br /> where <span class="math">$\hat{p}$</span> is the probability of 
 <p>Two important pieces of information that must be collected have been mentioned so far: number of animals observed (counts) and distances to the animals. A third and equally important piece of information is the <em>effort</em> expended – how large an area was covered by the observers during the survey. It is essential that effort is collected and recorded accurately, otherwise abundance will be estimated incorrectly (as the denominator in our equations will not be correct). When thinking about line transects we use the term “effort” to refer to the total length of lines that we survey, as this is fixed once the survey has been carried out (<span class="math"><em>w</em></span> may be changed during the analysis).</p>
 <div id="point-transects" class="section level3">
 <h3>Point transects</h3>
-<p>So far we have only talked about line transects. Rather than walking along lines we might prefer to stand at a point for some period of time and count how many animals we see or hear in that period of time. Such counts are common for avian studies as it’s often easier to hear small birds than see them in dense forest.</p>
+<p>So far we have only talked about line transects. Rather than walking along lines we might prefer to stand at a point for some period of time and count how many animals we see or hear in that period of time. Such counts are common for avian studies as it’s often easier to hear small birds than see them in dense forest and hearing can be degraded while observers are walking. It is also the case that multiple species are detected. Therefore the observer must be able to make a determination of species, measure the distance from the point to the bird, and record information about species and distance in a short amount of time. Consequently, relieving the observer of the process of navigation during all of this leads to the idea of the observer remaining roughly stationary at a point while collecting data.</p>
 <p>Going back to our simulated example, we will pick out 6 points to sample. At each point we again assume that detectability decreases with distance.</p>
-<pre class="r"><code>plot(x,y, pch=19,asp=1,cex=0.4,main=&quot;&quot;,col=&quot;grey&quot;)
-
-# set sigma
-sigma &lt;- 0.05
-# storage for detected distances
-detected_distances &lt;- c()
-# lay out a grid of points
-pt &lt;- as.list(expand.grid(x=seq(0.15,0.85,len=3),y=seq(0.15,0.85,len=3)))
-for(i in 1:length(pt$x)){
-  # generate point location
-  # plot the line transect
-  points(pt$x[i], pt$y[i], pch=19, col=&quot;blue&quot;,cex=0.7)
-  # calculate the distances to animals from the line
-  distances &lt;- sqrt((pt$x[i] - x)^2+(pt$y[i]-y)^2)
-  # randomly decide which were detected
-  detected &lt;- exp(-distances^2/(2*sigma^2)) &gt; runif(length(distances))
-  # plot those animals detected
-  points(x[detected],y[detected],pch=19,cex=0.4,col=&quot;red&quot;)
-  # collect the distances to detected objects
-  detected_distances &lt;- c(detected_distances,distances[detected])
-}</code></pre>
 <figure>
 <img src='distance-intro_files/figure-html/unnamed-chunk-6-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
@@ -364,7 +271,12 @@ Figure 6: Simulated population (grey points) with point transects (blue points) 
 Figure 7: Histogram of detected distances using point transects to survey the simulated population.
 </figcaption>
 </figure>
-<p>As we saw with the line transects, the point transect distances see a similar drop-off in frequency with increasing distance. However, unlike the line transects we also see an increase as distance increases up to around 0.03. This is because of the geometry of the point transect samplng: at small distances (small radii) the area surveyed is small, this then increases quadratically (since the area of the circle is <span class="math"><em>π</em><em>r</em><sup>2</sup></span>). So, up to a certain distance we see an increase in sightings, as we have an increasing area to survey, after than point the larger area becomes too big and the effect of detectability outweighs the effect of increasing area.</p>
+<p>As we saw with the line transects, the point transect distances see a similar drop-off in frequency with increasing distance. However, unlike the line transects we also see an increase as distance increases up to around 0.03. The shape of the histogram is down to two competing processes during sampling:</p>
+<ol style="list-style-type: decimal">
+<li>as the radius increases, the area surveyed increases – so there are more animals available to be detected, this increases quadratically (since the area of the circle is <span class="math"><em>π</em><em>r</em><sup>2</sup></span>).</li>
+<li>At the same time, we are increasing the distance from the point to the animals in question, this is the same problem as described for line transects: as animals are further away, they are harder to detect.</li>
+</ol>
+<p>So, up to a certain distance we see an increase in sightings, as we have an increasing numbers of animals that we can detect but after some distance the area becomes too big and the effect of detectability outweighs the effect of increasing area.</p>
 <p>Now we can again calculate abundance, in a similar manner as above, but note that the covered area is <span class="math"><em>k</em><em>π</em><em>w</em><sup>2</sup></span> where there are <span class="math"><em>k</em></span> points, each with radius <span class="math"><em>w</em></span> (again, we truncate at a distance <span class="math"><em>w</em></span>). If we again say that we have estimated <span class="math">$\hat{p}$</span> (somehow), and that <span class="math">$\hat{p}=$</span> 0.25, we can multiply the survey area by the probability of detection and calculate the abundance in the study area to be 519.61.</p>
 </div>
 </div>
