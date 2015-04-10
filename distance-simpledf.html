@@ -200,7 +200,7 @@ Figure 1: Histogram of observed distances to pantropical spotted dolphins in the
 <p>The relationship between count frequency and distance is described by a <em>detection function</em>. More formally, we model the probability that we detect an animal given that it is at a certain distance (<span class="math"><em>x</em></span>, say) from the line, mathematically: <br /><span class="math">ℙ(animal detected | animal at distance <em>x</em>)</span><br /> In general, we’ll refer to the detection function as <span class="math"><em>g</em></span>, which for now we’ll just say is a function of the distances (<span class="math"><em>x</em></span>) and its parameter(s) (generally <span class="math"><em>θ</em></span> or <span class="math">$\boldsymbol{\theta}$</span>), which we’ll estimate.</p>
 In the previous chapter, we looked at a <em>half-normal detection function</em>: <br /><span class="math">$$
 g(x; \sigma)=\exp\left(-\frac{x^2}{2\sigma^2}\right),
-$$</span><br /> here we denote the parameter we estimate as <span class="math"><em>σ</em></span>, which we call the <em>scale parameter</em> as it changes the scale of the function. We look at different possible half-normal detection functions (assuming that our distances range between 0 and 1) with some different scale parameters below:
+$$</span><br /> here we denote the parameter we wish to estimate as <span class="math"><em>σ</em></span>, which we call the <em>scale parameter</em>, the parameter can stretch or squash the function. We look at different possible half-normal detection functions (assuming that our distances range between 0 and 1) with some different scale parameters below:
 <figure>
 <img src='distance-simpledf_files/figure-html/hn-scale-par-comp-1.png' width='960'height=''width.px='960'height.px='288' style='display: block'>
 <figcaption>
@@ -233,7 +233,7 @@ Figure 3: Half-normal detection function (solid black line) fitted to the Gulf o
 ## 
 ##                          Estimate           SE        CV
 ## Average p               0.7230935   0.09200806 0.1272423
-## Nhat in covered area 6429.3208304 818.09665959 0.1272446</code></pre>
+## Nhat in covered area 6429.3208301 818.09665959 0.1272446</code></pre>
 <p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, parameter estimates and finally the “<code>Average p</code>” and “<code>N in covered region</code>” (along with uncertainty).</p>
 <p>It is worth noting that the parameter estimate (marked <code>(Intercept)</code>) is on the log scale, so <span class="math"><em>σ</em> = exp</span> 8.58 (why the parameters are reported in this way will become apparent in the next chapter, <a href="distance-covardf.html">What else affects detectability?</a>).</p>
 The half-normal is not the only possible detection function form (indeed, there are many options as we will see in <a href="distance-moredf.html">Improving the fit of detection functions</a>). Another possibility is the <em>hazard-rate</em> detection function, which is more flexible, but requires the estimation of an extra parameter. The plot below shows examples of hazard-rate detection functions.
@@ -245,7 +245,7 @@ Figure 4: Hazard-rate detection function with varying scale and shape parameters
 </figure>
 <p>Mathematically the hazard-rate detection function is defined as: <br /><span class="math">$$
 g(x; \sigma, b)=1-\exp\left(-\left(\frac{x}{\sigma}\right)^{-b}\right).
-$$</span><br /> The hazard-rate detection function has two parameters: <span class="math"><em>σ</em></span>, the scale parameter as in the half-normal and <span class="math"><em>b</em></span>, which is called the <em>shape</em> parameter. The role of the shape parameter is to control the size of the <em>shoulder</em> of the detection function – how far detection remains certain. We can see it’s effect in comparing between plots where <span class="math"><em>b</em> = 5</span> and <span class="math"><em>b</em> = 1</span>, a larger <span class="math"><em>b</em></span> gives a longer distance out to which we observe animals with certainty.</p>
+$$</span><br /> The hazard-rate detection function has two parameters: <span class="math"><em>σ</em></span>, the scale parameter as in the half-normal and <span class="math"><em>b</em></span>, which is called the <em>shape</em> parameter. The role of the shape parameter is to control the size of the <em>shoulder</em> of the detection function – how far detection remains certain. We can see its effect in comparing between plots where <span class="math"><em>b</em> = 5</span> and <span class="math"><em>b</em> = 1</span>, a larger <span class="math"><em>b</em></span> gives a longer distance out to which we observe animals with certainty.</p>
 <p>We can fit a hazard-rate detection function to the dolphin data in a similar way to half-normal, though now we must specify a detection function model:</p>
 <pre class="r"><code>hr.df &lt;- ds(mexdolphins, truncation=8000, model=df(model=~hr))</code></pre>
 <p>we can then plot this, as before:</p>

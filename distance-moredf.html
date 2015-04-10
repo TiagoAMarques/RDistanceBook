@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Improving the fit of detection functions</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">Improving the fit of detection functions</h1>
+</div>
+
+
+<p>The half-normal and hazard-rate detection functions seen in the previous chapters appear adequate for the datasets we’ve addressed so far, but there are a number of other modelling options available for the detection function. This chapter will give an overview of these models and how they can be fitted using <code>Distance2</code>. We also revisit model selection and look at the function <code>summarize_models</code>, which can build a table of fitted models before looking at common fitting problems and how to work around them.</p>
+<div id="additional-models-for-the-detection-function" class="section level2">
+<h2>Additional models for the detection function</h2>
+<p>Here we’ll look at two classes of detection function: <em>key plus adjustment terms</em> (K+A; also alternatively <em>key plus adjustment functions</em>) models and <em>mixture models</em>. Both of these classes fit into the AIC model selection framework discussed so far and can be tested for goodness of fit, so it’s a case of understanding their formulation and how to fit them in <code>Distance2</code>.</p>
+<div id="key-plus-adjustment-models" class="section level3">
+<h3>Key plus adjustment models</h3>
+<p>Both the half-normal and hazard-rate detection functions are somewhat limited in their flexibility. A simple adaptation of these detection functions is to consider them to be “key” functions which can be augmented with one or more “adjustment” terms <span class="citation">(Buckland, 1992; Buckland et al., 2001)</span>. The general form of these models mathematically is: <br /><span class="math">$$
+g(y) = \frac{k(y)\left[ 1 + \sum_{j=2}^J \alpha_j a_j(y)\right]}{k(0)\left[ 1 + \sum_{j=2}^J \alpha_j a_j(0)\right]}
+$$</span><br /> where we are modelling our detection function <span class="math"><em>g</em>(<em>y</em>)</span> with the key function <span class="math"><em>k</em>(<em>y</em>)</span> (e.g. half-normal) and <span class="math"><em>J</em></span> adjustment functions <span class="math"><em>a</em><sub><em>j</em></sub></span> which are multiplied by corresponding coefficients <span class="math"><em>α</em><sub><em>j</em></sub></span>, which we’ll estimate. The denominator (which is simply the numerator evaluated at zero distance) ensures that the detection probability is certain at zero distance (<span class="math"><em>g</em>(0) = 1</span>). Different <span class="math"><em>a</em><sub><em>j</em></sub>(<em>y</em>)</span>s are considered to be appropriate for each key function.</p>
+<p>In general we add up to <span class="math"><em>J</em></span> adjustments, this means that adjustments of <em>order</em> <span class="math">2, …, <em>J</em></span> are included<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. It is rarely that case that a model with more than 3 adjustment terms is selected by AIC.</p>
+<p>Which key and adjustment combinations and the particular orders that are appropriate is decided by whether the key and adjustments are <em>orthogonal</em>. In simple terms, orthogonality mathematically describes functions that don’t “overlap”; we’d like the functions not to overlap as we want each adjustment to contribute something “new” to the detection function (rather than adding to a part of the shape that’s already present).</p>
+<p>There is some controversy in the distance sampling community over whether one should include covariates in K+A models. Leaving aside the more philosophical issue of whether one <em>should</em> include covariates in a model that includes adjustments, we are left with an issue of practicality. It’s highly likely that the model for the detection function will become overparameterised in this case, so in general the use of adjustments when covariates are used in the model is not encouraged. There are additional considerations covered in the <a href="#monotonicity">Monotonicity</a> and <a href="#model-selection">Model selection</a> sections below.</p>
+<div id="half-normal-ka-models" class="section level4">
+<h4>Half-normal K+A models</h4>
+When using a half-normal key, two adjustments are considered appropriate: <em>cosine series</em> and <em>Hermite polynomials</em><a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>. We can look at these functions graphically:
+<figure>
+<img src='distance-moredf_files/figure-html/hn-adj-plots-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Half-normal key plus adjustment models. Left, with cosine adjustment terms of order 3; right, with Hermite polynomial adjustment terms of order 3. Solid line black shows the detection function, solid grey line is the half-normal key and the dashed grey show the two adjustments (scaled and shifted to be on the same axes).
+</figcaption>
+</figure>
+<p>These two models can be accessed in <code>Distance2</code> via the <code>model=</code> argument to <code>df()</code>. For example looking at the Gulf of Mexico dolphin data again:</p>
+<pre class="r"><code># half-normal with cosine adjustments of order 2
+dolphins.hn_cos &lt;- ds(mexdolphins,truncation=8000, df(model=~hn+cos(2)))
+# half-normal with Hermite adjustments of order 2
+dolphins.hn_hermite &lt;- ds(mexdolphins,truncation=8000, df(model=~hn+hermite(2)))</code></pre>
+Plotting these detection functions along with our half-normal model from the previous chapter, we can see that the Hermite polynomial adjustments have had no effect on the fit, where as the cosine adjustments have made the function rather too wiggly:
+<figure>
+<img src='distance-moredf_files/figure-html/hn-adj-dolphins-plot-1.png' width='1056'height=''width.px='1056'height.px='480' style='display: block'>
+<figcaption>
+Figure 2: Detection function models fitted to the Mexico dolphin data, left to right: half-normal, half-normal with cosine adjustment of order 2, half-normal with Hermite polynomials of order 2.
+</figcaption>
+</figure>
+<p>These examples illustrate two important lessons in fitting detection function model selection.</p>
+<p>Let’s start with the half-normal with Hermite polynomial detection function, there the adjustment didn’t appear to have any effect on the shape of the detection function. We can investigate the estimated parameters of the model and see that parameter that controls the influence of the Hermite adjustment is very very small:</p>
+<pre class="r"><code>dolphins.hn_hermite$par</code></pre>
+<pre><code>##  (Intercept)   hermite(2) 
+## 8.579707e+00 2.228580e-07</code></pre>
+<p>It therefore seems reasonable to rule out this model. The half-normal with cosine model (second panel) seems like a much better candidate.</p>
+</div>
+<div id="hazard-rate-ka-models" class="section level4">
+<h4>Hazard-rate K+A models</h4>
+<p>It is also possible to combine the hazard-rate detection function with adjustment terms to lead to a more flexible fit for the detection function. We can again use cosine adjustments, just as we did with the half-normal detection function above. Instead of Hermite polynomials, we use <em>simple polynomials</em>.</p>
+Plotting an example of these two adjustments:
+<figure>
+<img src='distance-moredf_files/figure-html/hr-poly-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 3: Hazard-rate key with adjustments. Left, with cosine adjustments of order 3; right, simple polynomial adjustment terms of order 3. Solid line black shows the detection function, solid grey line is the hazard-rate key and the dashed grey shows the adjustment (rescaled to be on the same axes).
+</figcaption>
+</figure>
+<p>The syntax for the hazard-rate adjustment models is very similar to that of the half-normal models:</p>
+<pre class="r"><code># hazard-rate with a cosine adjustment of order 2
+dolphins.hr_cos &lt;- ds(mexdolphins,truncation=8000, df(model=~hr+cos(2)))
+# hazard-rate with a simple polynomial adjustment of order 2
+dolphins.hr_poly &lt;- ds(mexdolphins,truncation=8000, df(model=~hr+poly(2)))</code></pre>
+We can again plot the resulting models:
+<figure>
+<img src='distance-moredf_files/figure-html/hr-adj-dolphins-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 4: Detection function models fitted to the Mexico dolphin data, left to right: hazard-rate, half-normal with cosine adjustment of order 2, half-normal with simple polynomial of order 2.
+</figcaption>
+</figure>
+</div>
+<div id="fourier-models" class="section level4">
+<h4>Fourier models</h4>
+<p>A final set of detection function models that fit into the “key plus adjustments” formulation is the “Fourier” type model. In this case we have a uniform key function and a cosine series as adjustments to that. We can write this model as: <br /><span class="math">$$
+g(y) = \frac{\frac{1}{w}\left[ 1 + \sum_{j=1}^J \alpha_j \cos \left( \frac{j \pi y}{w} \right) \right]}{\frac{1}{w}\left[ 1 + \sum_{j=1}^J \alpha_j \cos(0)\right]}
+$$</span><br /> Note that here the key “function” is <span class="math">1/<em>w</em></span> and the summation of the cosines starts at <span class="math"><em>j</em> = 1</span> (rather than <span class="math"><em>j</em> = 2</span> above).</p>
+We can again look at the function graphically:
+<figure>
+<img src='distance-moredf_files/figure-html/fourier-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 5: Fourier detection function; uniform key with cosine adjustments of order 1 and 2. Solid line black shows the detection function, solid grey line is the constant uniform key and the dashed grey show the two adjustments (scaled and shifted to be on the same axes).
+</figcaption>
+</figure>
+<p>Fourier models can be specified in a similar way to the half-normal and hazard-rate models above:</p>
+<pre class="r"><code># uniform with a cosine adjustment of order 1
+dolphins.fourier1 &lt;- ds(mexdolphins,truncation=8000, df(model=~unif+cos(1)))
+# uniform with cosine adjustments of order 1&amp;2
+dolphins.fourier12 &lt;- ds(mexdolphins,truncation=8000, df(model=~unif+cos(1,2)))</code></pre>
+We can again plot the fitted models:
+<figure>
+<img src='distance-moredf_files/figure-html/unif-adj-dolphins-plot-1.png' width='672'height=''width.px='672'height.px='480' style='display: block'>
+<figcaption>
+Figure 6: Detection function models fitted to the Mexico dolphin data. Left: uniform with cosine adjustment of order 1. Right: uniform with cosine adjustments of order 1 and 2.
+</figcaption>
+</figure>
+</div>
+<div id="recap" class="section level4">
+<h4>Recap</h4>
+<p>So far we’ve looked at some new options for modelling the detection function. They are summarised in the following table along with their mathematical forms:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Key function</th>
+<th align="left">Mathematical form</th>
+<th align="left">Adjustment</th>
+<th align="left">Mathematical form</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">uniform</td>
+<td align="left"><span class="math">1/<em>w</em></span></td>
+<td align="left">cosine</td>
+<td align="left"><span class="math">$\sum_{j=1}^J \alpha_j \cos(j \pi y/w)$</span></td>
+</tr>
+<tr class="even">
+<td align="left">half-normal</td>
+<td align="left"><span class="math">$\exp\left(-\frac{y^2}{2 \sigma^2}\right)$</span></td>
+<td align="left">cosine</td>
+<td align="left"><span class="math">$\sum_{j=2}^J \alpha_j \cos(j \pi y/w)$</span></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">Hermite polynomial</td>
+<td align="left"><span class="math">$\sum_{j=2}^J \alpha_j H_{2j}(y/w)$</span></td>
+</tr>
+<tr class="even">
+<td align="left">hazard-rate</td>
+<td align="left"><span class="math">$1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$</span></td>
+<td align="left">cosine</td>
+<td align="left"><span class="math">$\sum_{j=2}^J \alpha_j \cos(j \pi y/w)$</span></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">Simple polynomial</td>
+<td align="left"><span class="math">$\sum_{j=2}^J \alpha_j (y/w)^{2j}$</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="monotonicity" class="section level4">
+<h4>Monotonicity</h4>
+<p>Plots of the models above show a common property amongst the fitted detection functions: they always decrease with increasing distance (<em>monotonically decreasing</em>). This is no coincidence, in fact it takes some computational effort to ensure that this happens. In this section we’ll first examine why monotonicity is a reasonable rquest to make of your detection functions, then go on to show what can go wrong when detection functions are non-monotonic.</p>
+<p>Monotonicity makes sense as we are much more likely to see animals near us than further away. We may see “bumps” in the histogram of distances further out, but we assume this is just noise in the data, actually out model is that we see fewer objects as their distance from the transect increases. If there is some very large bump in the histograms we suspect that there has been some problem during the survey (some features that have caused animals to appear to “clump together” at a certain distance) or that the detection function is overfitting to random variation in the data (by chance there are more observations at one distance further away than others). One cause of this is that the transect was surveyed parallel to some geographical feature that the animals were interested in, for example if a transect is a road running through fields, then birds may sit on fences and are not so observable in the fields inbetween.</p>
+<p>By default <code>Distance2</code> will try to constrain those functions which can become non-monotonic during the fitting. But we can see what could go wrong by setting the <code>monotonicity</code> <code>control</code> option, we can force the fitting routine to not constrain the function to be monotonic:</p>
+<pre class="r"><code>dolphins.hn_cos_nomono &lt;- ds(mexdolphins,truncation=8000, df(model=~hn+cos(2)), control=list(monotonicity=FALSE))
+
+summary(dolphins.hn_cos_nomono)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 47 
+## Distance range         : 0 - 8000 
+## AIC                    : 841.118 
+## 
+## Detection function     : Half-normal + cosine(2) adjustments 
+## 
+## Detection function parameters
+##              Estimate        SE
+## (Intercept) 8.5842206 0.2327356
+## cos(2)      0.3699387 0.1962412
+## 
+##                          Estimate           SE        CV
+## Average p               0.5240601 9.890007e-02 0.1887189
+## Nhat in covered area 8871.1195386 1.674173e+03 0.1887217</code></pre>
+<p>Comparing this summary to the previous one above (when montonicity is enforced), we can see that there is a difference in the coefficient estimated for the cosine part of the model. We can also look a plot of the model, to make the problem more obvious.</p>
+<pre class="r"><code>plot(dolphins.hn_cos_nomono)</code></pre>
+<figure>
+<img src='distance-moredf_files/figure-html/nonmonoex-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 7: Half-normal with order 2 cosine adustments fitted to the dolphin data, but when the fitting doesn’t constrain the detection function to be monotonically decreasing
+</figcaption>
+</figure>
+<p>We can also find out whether and where the detection functions are non-monotonic using the <code>df_check_mono()</code> function in <code>Distance2</code>. We run the function on a fitted detection function object, if the function is monotonic then it will return <code>TRUE</code>. If the function is non-monotonic, then <code>df_check_mono</code> will return <code>FALSE</code> and will give warnings explaining how the non-monotonicity has manifested itself.</p>
+<p>Using the above analysis to illustrate the checking function:</p>
+<pre class="r"><code>df_check_mono(dolphins.hn_cos)</code></pre>
+<pre><code>## Detection function is not strictly monotonic!</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>df_check_mono(dolphins.hn_cos_nomono)</code></pre>
+<pre><code>## Detection function is not strictly monotonic!</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+We can include the <code>plot=TRUE</code> argument to show where the non-monotonicity occurs:
+<figure>
+<img src='distance-moredf_files/figure-html/check-fourier-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 8: Montonicity check plot for the half-normal with cosine adjustment of order 2, fitted to the dolphin data. The non-monotonic part of the detection function is highlighted in red.
+</figcaption>
+</figure>
+<p>So in the former case, we don’t have to be too concerned about the monotonicity in the function, however the second case shows a much more concerning non-monotonic function, we should be much more concerned about this and discard this model.</p>
+<p>As mentioned above, fitting the detection function so that its shape is constrainted is a computationally complicated task. In <code>Distance2</code> we simple take a set of distances between the left and right truncation and evaluate them. The optimiser then ensures that as the distance increases the detection function value at that distance decreases compared to the last. When the values are larger, then the parameters that lead to that shape are discarded. This method is not foolproof, as the number of distances we evaluate the detection function at has an effect on whether the algorithm “knows” that the detection function is non-monotonic. Increasing the number of points leads to a longer time taken to fit the model, since we are doing more calculations and comparisons.</p>
+<p>Returning to the considerations above regarding the addition of adjustments to models which contain covariates, it’s worth noting that detecting monotonicity gets much harder when covariates are included. <code>df_check_mono</code> simply evaluates <span class="math"><em>g</em>(<em>x</em>)</span> over a grid and checks that the points always decrease when going left to right, but for a covariate model there are effectively as many functions to check as there are different observed values of the covariates (or rather their unique combinations). This is relatively straightforward when there is a single factor with a few levels, but quickly becomes a computational nightmare.</p>
+<p>Forunately, as we’ll see next, there is another way to construct detection functions that ensures that they are monotonic by construction.</p>
+</div>
+</div>
+<div id="mixture-models" class="section level3">
+<h3>Mixture models</h3>
+<p>An alternative way to formulate the detection function is by use of <em>mixture models</em>. A mixture model takes advantage of the mathematical fact that when you sum any number of monotonic functions, the resulting function is also monotonic – this works around the above monotonicity issues in a simple way.</p>
+<p>CITE ME developed a mixture model detection function using a sum of half-normal functions: <br /><span class="math">$$
+g(y) = \sum_{j=1}^J \phi_j \exp\left(-\frac{y^2}{2 \sigma_j^2}\right)
+$$</span><br /> we refer to the number of <em>components</em> or <em>points</em> in such a model and denote this <span class="math"><em>J</em></span>. Each of the <span class="math"><em>J</em></span> components are weighted by the <span class="math"><em>ϕ</em><sub><em>j</em></sub></span>s, which control the amount of influence that each component has in the model. We impose the condition that the <span class="math"><em>ϕ</em><sub><em>j</em></sub></span> must sum to one.</p>
+Plotting a mixture model detection function gives some intuition about how the model works:
+<figure>
+<img src='distance-moredf_files/figure-html/mixture-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 9: Half-normal mixture model detection function. Solid line black shows the detection function, Dashed grey lines show the two the two mixture components.
+</figcaption>
+</figure>
+<p>In the above plot the two dashed lines are added (with equal weighting of <span class="math">1/2</span> each) to produce the bold line. Because each component is monotonic, the black line is guaranteed to be monotonic.</p>
+<p>Since the simplest mixture model detection function uses 3 parameters, it’s recommended that the formulation is used for relatively large data sets. For that reason we’ll switch to the amakihi data we saw in the previous chapter to illustrate how to fit the model:</p>
+<pre class="r"><code>data(amakihi)
+# again, we&#39;ll truncate at 82.5m
+# 1-point mixture -- just a half-normal model
+amakihi.hn_mix1 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5, model=df(~hn+mix(1)))
+# 2-point mixture
+amakihi.hn_mix2 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5, model=df(~hn+mix(2)))
+# 2-point mixture with observer as a covariate
+amakihi.hn_mix2_obs &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5, model=df(~hn+mix(2), scale=~obs))</code></pre>
+We can again plot the resulting models:
+<figure>
+<img src='distance-moredf_files/figure-html/hn-mix-amakihi-plot-1.png' width='672'height=''width.px='672'height.px='480' style='display: block'>
+<figcaption>
+Figure 10: Mixture model detection functions fitted to the Hawaiian amakihi data. Left: 1-point half-normal mixture model (equivanelent to using <code>~hn</code>). Right: 2-point mixture of half-normals.
+</figcaption>
+</figure>
+<figure>
+<img src='distance-moredf_files/figure-html/hn-mix-amakihi-obs-plot-1.png' width='672'height=''width.px='672'height.px='480' style='display: block'>
+<figcaption>
+Figure 11: Mixture model detection function with 2 components fitted to the Hawaiian amakihi data with observer included as a factor covariate.
+</figcaption>
+</figure>
+<p>Note that a “1-point” mixture is simply a half-normal detection function as descibed in <a href="distance-simpledf.html">Models for detectability</a>.</p>
+</div>
+<div id="model-selection" class="section level3">
+<h3>Model selection</h3>
+<p>At this point we have quite a lot of models (7 for the dolphins and 3 for the amakihi) and it would be nice to return to the topic of model selection. Fortunately, all of the models described here fit into the AIC framework that we saw in the previous chapters. We can also use the goodness of fit procedures that we’ve seen so far.</p>
+<p>Ignoring goodness of fit for now, we can use the <code>summarize_models</code> function in <code>Distance2</code> to create a table of model results (sorted by AIC) for easy comparison. For example, for the models of dolphins we can produce the results table by simply giving the function the models we wish to consider as arguments.</p>
+<pre class="r"><code>summarize_models(dolphins.hn_cos, dolphins.hn_hermite, dolphins.hr_cos, dolphins.hr_poly, dolphins.fourier1, dolphins.fourier12)</code></pre>
+<pre><code>##                         Model Formula # pars       P_a   CV(P_a)      AIC
+## 1     Half-normal + cosine(2)      ~1      2 0.5498215 0.2012560 841.4398
+## 5         Uniform + cosine(1)      ~1      1 0.6996426 0.1268387 841.8044
+## 6       Uniform + cosine(1,2)      ~1      2 0.6262917 0.1859539 842.6838
+## 3     Hazard-rate + cosine(2)      ~1      3 0.5492293 0.2000631 843.2615
+## 4 Hazard-rate + polynomial(2)      ~1      3 0.5759970 0.4325613 844.1968
+## 2    Half-normal + Hermite(2)      ~1      2 0.7230935 0.1841544 844.3143</code></pre>
+<p>Note that the numbering of rows corresponds to the order in which the models were passed to <code>summarize_models</code>. Columns are as follows:</p>
+<ul>
+<li><code>Model</code> gives a short description of fitted model (this may be ambiguous so the row numbers may be helpful in working out which model is which).</li>
+<li><code>Formula</code> describes the covariate model (just <code>~1</code> when there are no covariates).</li>
+<li><code># pars</code> gives the number of parameters in the model.</li>
+<li><code>P_a</code> lists the average probability of detection.</li>
+<li><code>CV(P_a)</code> gives the coefficient of variation of average probability of detection giving an indication of uncertainty in the model (more on this in <a href="distance-uncertainty.html">How certain are we in our estimates?</a>).</li>
+<li><code>AIC</code> finally lists Akaike’s information criterion for the model.</li>
+</ul>
+<p>We can do the same thing for the detection functions fitted to the amakihi data too:</p>
+<pre class="r"><code>summarize_models(amakihi.hn_mix1, amakihi.hn_mix2, amakihi.hn_mix2_obs)</code></pre>
+<pre><code>##                         Model Formula # pars       P_a    CV(P_a)      AIC
+## 3 2-point half-normal mixture    ~obs      5 0.2788656 0.05789140 10778.69
+## 2 2-point half-normal mixture      ~1      3 0.2834897 0.06204529 10805.48
+## 1                 Half-normal      ~1      1 0.3514386 0.03208017 10833.84</code></pre>
+<p>The <code>Formula</code> column now includes <code>~obs</code> for the model fitted with observer as a covariate.</p>
+<p>These tables can provide a useful summary when many models have been fitted, but don’t excuse the investigator from performing model checking and plotting as described previously. They are a convenient utility not a fast track to completing an analysis.</p>
+<p>As mentioned above, we don’t recommend adding adjustments to models when covariates are included, as they can lead to detection probabilities that are greater than 1 for some distances and make it difficult to diagnose monotonicity problems. However another potential problem is that in general we don’t expect detection function models to have many parameters (usually models with fewer than 5 parameters are enough to encapsulate a sufficient information about the shape of the detection functions). Although the “parameter hungry” argument can also be levelled against mixture model detection functions, they at least do not suffer from the additional issues of implausible function shape.</p>
+</div>
+</div>
+<div id="model-fitting-problems" class="section level2">
+<h2>Model fitting problems</h2>
+<p>There are times when one can write the code to fit a model in R but it will not fit. One might receive error messages about convergence errors or invalid parameter values. These errors can happen for a variety of reasons and a comprehensive treatment is impossible but here are some possible reasons and fixes for model fitting problems.</p>
+<ul>
+<li><strong>Truncation</strong>: Model fitting an often fail if the truncation distance is too large, as there may not be a value of the model parameters that encapsulates all of the data that was collected. Decreasing the truncation distance and refitting the model may allow the model to be fitted.</li>
+<li><strong>Too many parameters</strong>: When including covariates in the model the number of parameters to estimate can often be large (especially when a factor with many levels is included). In this case fitting the simplest model and increasing its complexity one covariate at a time may help. One can also use the parameter values from the previous model fit as starting values for the more complex model, which at least gives the optimizer a good starting place (see <code>?starting_values</code> for more information on how to do this in <code>Distance2</code>).</li>
+<li><strong>Optimization algorithm</strong>: The default optimizer used by <code>ds</code> is relatively robust but it may be necessary to use additional options to allow a larger space of parameter values to be explored. A useful option is to supply the following option to <code>ds</code>: <code>control=list(optimx.method=c(&quot;SANN&quot;,&quot;nlminb&quot;))</code> which adds <code>&quot;SANN&quot;</code> to the optimizers that <code>ds</code> will use (normally only <code>nlminb</code> is used). <code>SANN</code> uses simulated annealing <span class="citation">(Press et al., 1990)</span>, which may allow us to explore more of the parameter space.</li>
+<li><strong>Covariate scaling</strong>: Covariates are collected on very different scales; for example Beaufort sea state will usually vary between 0 and 5, but times of day might be measured in minutes from a set point, so could be in the hundreds. These different scales can cause problems for the optimizer, so by default <code>ds</code> will attempt to rescale all the covariates by multiplying them by that covariates standard deviation divided by the standard deviation of the distances. This usually works fairly well but one might need to manually rescale in some situations. In this case the <code>control</code> option <code>parscale</code> can be set, e.g. by supplying <code>control=list(parscale=c(1,0.01,1)</code> to <code>ds</code> to perform the rescaling.</li>
+</ul>
+<p>The above reasons are the most popular ways in which a model can fail to fit, though there are many other potential complex pitfalls. Building detection functions with small increments of complexity can make the diagnosis of these issues significantly easier.</p>
+<p>It is also worth noting at this point that although convergence issues can cause the model to fail to fit entirely, it is also possible that the model will fit but the parameters which the optimizer finds are not optimal. One indication that parameters may not be optimal is large uncertainty associated with the parameters (which can be found in the model <code>summary</code> output), in this case following the above advice in setting starting values and optimizer may help.</p>
+</div>
+<div id="recap-1" class="section level2">
+<h2>Recap</h2>
+<p>In this chapter we looked at additional models for the detection function that can be used in a variety of different situations when simple half-normal or hazard-rate detection functions are not flexible enough. All these models can be selected by AIC and checked for goodness of fit via Kolmogorov-Smirnov and Cramer-von Mises tests. The <code>summarize_models</code> function then allows one to easily review fitted models. Finally we looked at what can be done when models fail to fit. In the next chapter we’ll look at how we can estimate abundance once we’ve successfully fitted and selected our detection function.</p>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<p>The models described above expand the set of possibilities considerably on those from the previous chapters. There are yet more models for the detection function to consider, though unfortunately not enough time here to give details on them all. A brief summary:</p>
+<ul>
+<li><em>Gamma</em> and <em>2-part normal</em> detection functions are useful when we can assume that detectability is certain at some point but that point is not at zero distance. This can happen during aerial surveys when observers struggle to see what is directly below them but can spot animals at a given distance with certainty. Gamma detection functions are covered in <span class="citation">Becker and Quang (2009)</span>.</li>
+<li><em>Exponential power series</em> is a more flexible alternative to the hazard-rate <span class="citation">(Otto and Pollock, 1990)</span>.</li>
+<li><em>Negative exponential</em>: can be useful when very spiked data are collected but usually is only recommended to salvage a survey gone badly wrong (as the negative exponential has no “shoulder”). A mixture model approach is usually more reliable when data are very spiked <span class="citation">(see e.g. Buckland, 1992; Buckland et al., 2001; Eidous, 2011)</span>.</li>
+</ul>
+<p>The original literature on these models is spread accross a number of papers.</p>
+<ul>
+<li>Key function plus adjustment-type models were first proposed by <span class="citation">(Buckland, 1992)</span> and further elaborated on in <span class="citation">(Buckland et al., 2001)</span>.</li>
+<li>Mixture model detection funcions were proposed by <span class="citation">(Miller and Thomas, 2015)</span>.</li>
+</ul>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Becker, E. and Quang, P.X. (2009) A gamma-shaped detection function for line-transect surveys with mark-recapture and covariate data., <strong>14</strong>, 207–223.</p>
+<p>Buckland, S.T. (1992) Fitting density functions with polynomials. <em>Applied Statistics</em>, <strong>41</strong>, 63–76.</p>
+<p>Buckland, S.T., Anderson, D.R., Burnham, K.P., Laake, J.L., Borchers, D.L. and Thomas, L. (2001) <em>Introduction to Distance Sampling</em>. Oxford University Press.</p>
+<p>Eidous, O.M. (2011) A Semi-Parametric Model for Line Transect Sampling without the Shoulder Condition., 1–15.</p>
+<p>Miller, D.L. and Thomas, L. (2015) Mixture models for distance sampling detection functions. <em>PloS one</em>.</p>
+<p>Otto, M.C. and Pollock, K.H. (1990) Size Bias in Line Transect Sampling: A Field Test. <em>Biometrics</em>, <strong>46</strong>, 239–245.</p>
+<p>Press, W.H., Flannery, B.P., Teukolsky, S.A. and Vetterling, W.T. (1990) <em>Numerical recipes</em>. Cambridge University Press.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>It doesn’t really make sense to include only higher order terms, i.e. ignoring order 2 and only including order 3 rather than both 2 and 3. As the adjustment order increases the complexity of the adjustment increases and each term is orthogonal.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Further mathematical details of Hermite polynomials can be found in many textbooks, <a href="http://functions.wolfram.com/Polynomials/HermiteH/02/0001/">Wolfram’s page is a good starting point</a>.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>
