@@ -231,10 +231,9 @@ Figure 3: Half-normal detection function (solid black line) fitted to the Gulf o
 ##             Estimate        SE
 ## (Intercept) 8.579708 0.2300667
 ## 
-##                          Estimate           SE        CV
-## Average p               0.7230935   0.09200806 0.1272423
-## Nhat in covered area 6429.3208301 818.09665959 0.1272446</code></pre>
-<p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, parameter estimates and finally the “<code>Average p</code>” and “<code>N in covered region</code>” (along with uncertainty).</p>
+##            Estimate         SE        CV
+## Average p 0.7230935 0.09200806 0.1272423</code></pre>
+<p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, parameter estimates and finally the “<code>Average p</code>”, along with their associated uncertainties.</p>
 <p>It is worth noting that the parameter estimate (marked <code>(Intercept)</code>) is on the log scale, so <span class="math"><em>σ</em> = exp</span> 8.58 (why the parameters are reported in this way will become apparent in the next chapter, <a href="distance-covardf.html">What else affects detectability?</a>).</p>
 The half-normal is not the only possible detection function form (indeed, there are many options as we will see in <a href="distance-moredf.html">Improving the fit of detection functions</a>). Another possibility is the <em>hazard-rate</em> detection function, which is more flexible, but requires the estimation of an extra parameter. The plot below shows examples of hazard-rate detection functions.
 <figure>
@@ -271,11 +270,10 @@ Figure 5: Hazard-rate detection function (solid black line) fitted to the Gulf o
 ## (Intercept) 7.945285 0.9700149
 ## shape       0.000000 0.7602676
 ## 
-##                          Estimate           SE        CV
-## Average p               0.5754871    0.2206894 0.3834828
-## Nhat in covered area 8078.3740246 3097.9273281 0.3834840</code></pre>
+##            Estimate        SE        CV
+## Average p 0.5754871 0.2206894 0.3834828</code></pre>
 <p>Note that there are now two rows of parameters, one for scale and then one for shape.</p>
-<p>The hazard-rate model has a rather different average detection probability from the half-normal model (0.5755 rather than 0.7231 for the half-normal) and hence rather different abundance estimates. How do we decide between these two models?</p>
+<p>The hazard-rate model has a rather different average detection probability from the half-normal model (0.5755 rather than 0.7231 for the half-normal) and hence we’ll end up with rather different abundance estimates. How do we decide between these two models?</p>
 </div>
 <div id="what-makes-a-good-detection-function" class="section level2">
 <h2>What makes a “good” detection function?</h2>
@@ -369,9 +367,6 @@ Figure 7: Quantile-quantile plot for the hazard-rate detection function fitted t
 <p>At this point it’s worth noting that we’re never interested in the absolute values of the AIC, but rather the different between the best candidate model’s AIC and the others. Articles will often include tables with a column labelled <span class="math">Δ</span>AIC containing these differences. Burnham and Anderson <span class="citation">(2002)</span> is a thorough treatment of AIC in an ecological modelling context, as well as a more philosophical guide on statistical modelling.</p>
 </div>
 </div>
-<div id="model-outputs" class="section level1">
-<h1>Model outputs</h1>
-<p>Having selected the half-normal model, we can return to the <code>summary</code> results above. The last two rows of the summary report statistics about <code>Average p</code> and <code>Nhat in covered region</code>; we now investigate these quantities.</p>
 <div id="average-detectability" class="section level2">
 <h2>Average detectability</h2>
 <p>With a fitted detection function we can evaluate the probability of observing an animal given its distance from the transect (the definition of the detection function, <span class="math"><em>g</em></span>) but, what we’d rather know is the probability of detecting an animal on average (since our aim is to make inference about the population of animals, rather than a single observation in particular). To do this we want to integrate distance out of the detection function – removing the conditioning on the distance.</p>
@@ -379,28 +374,12 @@ Figure 7: Quantile-quantile plot for the hazard-rate detection function fitted t
 <p>Denoting the average probability of detection as <span class="math">$\hat{P_a}$</span>, for line transects we can write<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> : <br /><span class="math">$$
 \hat{P_a} = \frac{1}{w}\int_0^w g(x;\boldsymbol{\theta}) \text{d}x
 $$</span><br /> where <span class="math"><em>w</em></span> denotes the truncation distance (which we set to 8000m). For the pantropical dolphins we obtain <span class="math">$\hat{P_a}=$</span> 0.7231 (see also the output of the <code>summary</code>, under <code>Average p</code>/<code>Estimate</code>).</p>
-</div>
-<div id="abundance-in-covered-area" class="section level2">
-<h2>Abundance in covered area</h2>
-<p>Although the average probability of detection is an interesting quantity in its own right, we are primarily interested in estimating abundance. The row <code>Nhat in covered area</code> gives an estimate of the number of animals in the covered area (that is, the area we actually surveyed – the area we covered by transects out to the truncation distance). To compute this abundance estimate (which we’ll denote <span class="math">$\hat{N}$</span>) we use a <em>Horvitz-Thompson-like estimator</em> <span class="citation">(Thompson, 2002)</span>, which one can think of as “correcting” the size of the observations based on the probability of detection. That is, if we saw 1 dolphin in this study, we should actually inflate this count by <span class="math">$1/\hat{P_a}$</span> to estimate abundance.</p>
-<p>The Horvitz-Thompson estimator is defined as: <br /><span class="math">$$
-\hat{N} = \sum_{i=1}^n \frac{s_i}{\hat{P_a}},
-$$</span><br /> where <span class="math"><em>s</em><sub><em>i</em></sub></span> is the size of the group of the <span class="math"><em>i</em><sup>th</sup></span> observation. So for each group (or individual) we saw, inflate them by <span class="math"><em>P</em><sub><em>a</em></sub></span>, then sum up over the groups<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
-<p>In the dolphin data group size ranges from 15 to 650. We can look at a histogram of the observed group sizes:</p>
-<pre class="r"><code>hist(mexdolphins$size, main=&quot;&quot;, xlab=&quot;Observed group size&quot;, breaks=seq(0, 700, by=25))</code></pre>
-<figure>
-<img src='distance-simpledf_files/figure-html/dolphins-size-hist-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
-<figcaption>
-Figure 8: Histogram of observed group sizes of dolphins in the Gulf of Mexico. Most groups are in the size range 15-200, but there are a few much larger groups, these have a much larger effect on the Hovitz-Thompson estimator.
-</figcaption>
-</figure>
-<p>The Horvitz-Thompson-like estimator above is used in the <code>summary</code> of the model so calculate the abundance in the covered area. We may also want to extrapolate and estimate abundance in a larger area outside where we covered (though still within reasonable geographic/environmental limits of the area covered by the surveys). We’ll cover this in detail in <a href="distance-abundance.html">Adundance estimation</a>.</p>
-</div>
+<p>These average probabilities of detection are used to calculate abundance estimates as we’ll see in <a href="distance-abundance.html">Abundance estimation</a>.</p>
 </div>
 <div id="point-transects" class="section level1">
 <h1>Point transects</h1>
-<p>So far we’ve looked at the dolphin data from the Gulf of Mexico, a line transect survey. Now let’s look at point transect data and show that fitting a detection function to that data and estimating abundance is not significantly different.</p>
-<p>We’ll be looking at data consisting of 1485 observations of <a href="https://en.wikipedia.org/wiki/Hawai%CA%BBi_%CA%BBamakihi">amakihi</a> (<em>Hemignathus virens</em>), a bird species native to Hawaii<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>. Data were collected as part of a larger survey (of many species) on the island of Hawaii. The surveys were performed over 7 periods between July 1992 and April 1995. There were 41 point transects, although they were not all surveyed every time.</p>
+<p>So far we’ve looked at the dolphin data from the Gulf of Mexico, a line transect survey. Now let’s look at point transect data and show that fitting a detection function to that data is not significantly different.</p>
+<p>We’ll be looking at data consisting of 1485 observations of <a href="https://en.wikipedia.org/wiki/Hawai%CA%BBi_%CA%BBamakihi">amakihi</a> (<em>Hemignathus virens</em>), a bird species native to Hawaii<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>. Data were collected as part of a larger survey (of many species) on the island of Hawaii. The surveys were performed over 7 periods between July 1992 and April 1995. There were 41 point transects, although they were not all surveyed every time.</p>
 <p>As for the dolphins we can again load the data, which is bundled with <code>Distance2</code>:</p>
 <pre class="r"><code>data(amakihi)</code></pre>
 <p>Plotting the histogram of observed distances:</p>
@@ -408,7 +387,7 @@ Figure 8: Histogram of observed group sizes of dolphins in the Gulf of Mexico. M
 <figure>
 <img src='distance-simpledf_files/figure-html/amakihi-plot-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
-Figure 9: Histogram of observed distances to amakihi observations.
+Figure 8: Histogram of observed distances to amakihi observations.
 </figcaption>
 </figure>
 <p>The histogram is the shape we saw in the previous chapter, an increase up to a point (due to the geometry of the sampler), then a drop off after that point. We also notice that unlike the dolphin example, the observed distances trail off rather more gradually, with a few distances higher than 200m (the median observed distance is 45). We probably don’t want to model the long tail in the distances as they are likely outliers, so we will <em>truncate</em> the data. Before we do let’s see what happens when we don’t truncate.</p>
@@ -430,9 +409,8 @@ Figure 9: Histogram of observed distances to amakihi observations.
 ##             Estimate          SE
 ## (Intercept) 3.742683 0.009661874
 ## 
-##                          Estimate           SE         CV
-## Average p            5.701686e-02 1.101779e-03 0.01932374
-## Nhat in covered area 2.604493e+04 8.270700e+02 0.03175551</code></pre>
+##             Estimate          SE         CV
+## Average p 0.05701686 0.001101779 0.01932374</code></pre>
 <p>We estimate $P_a=$0.057. This time we use <span class="math"><em>π</em><sub><em>r</em></sub>(<em>r</em>) = 2<em>r</em>/<em>w</em><sup>2</sup></span>, so <br /><span class="math">$$
 \hat{P_a} = \frac{2}{w^2}\int_0^w r g(r;\boldsymbol{\theta}) \text{d}r,
 $$</span><br /> for point transects.</p>
@@ -443,7 +421,7 @@ gof_tests(hn.df.notrunc)</code></pre>
 <figure>
 <img src='distance-simpledf_files/figure-html/amakihi-notrunc-plot-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
 <figcaption>
-Figure 10: Plots of a half-normal detection function fitted to the amakihi point transect data. Left: the fitted detection function with histogram of distances (rescaled according to the change in area due to point transect sampler geometry); the detection function drops to zero at around 150m. Right: quantile-quantile plot, showing that the model does not fit well (many dots below the line <span class="math"><em>y</em> = <em>x</em></span>).
+Figure 9: Plots of a half-normal detection function fitted to the amakihi point transect data. Left: the fitted detection function with histogram of distances (rescaled according to the change in area due to point transect sampler geometry); the detection function drops to zero at around 150m. Right: quantile-quantile plot, showing that the model does not fit well (many dots below the line <span class="math"><em>y</em> = <em>x</em></span>).
 </figcaption>
 </figure>
 <pre><code>## Goodness of fit testing for distance sampling model
@@ -460,7 +438,7 @@ Figure 10: Plots of a half-normal detection function fitted to the amakihi point
 <figure>
 <img src='distance-simpledf_files/figure-html/amakihi-notrunc-plot-pdf-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
-Figure 11: Plot of the probability density function for the model fitted to the amakihi data with histogram of observations.
+Figure 10: Plot of the probability density function for the model fitted to the amakihi data with histogram of observations.
 </figcaption>
 </figure>
 <p>We can see the density for distances greater than 150m is very small.</p>
@@ -486,9 +464,8 @@ hn.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5)<
 ##             Estimate         SE
 ## (Intercept) 3.707559 0.01210836
 ## 
-##                          Estimate           SE         CV
-## Average p               0.1474673 3.543475e-03 0.02402889
-## Nhat in covered area 9995.4394977 3.398109e+02 0.03399659</code></pre>
+##            Estimate          SE         CV
+## Average p 0.1474673 0.003543475 0.02402889</code></pre>
 <pre class="r"><code>summary(hn.df.trunc.82.5)</code></pre>
 <pre><code>## Summary of fitted detection function
 ## Transect type          : point 
@@ -502,14 +479,13 @@ hn.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5)<
 ##             Estimate         SE
 ## (Intercept) 3.580267 0.02011161
 ## 
-##                          Estimate           SE         CV
-## Average p               0.3514386   0.01127421 0.03208017
-## Nhat in covered area 3536.8910332 139.28834431 0.03938158</code></pre>
-<p>Although there is not a large change in parameter estimate between the two models, this (along with the change in truncation) does lead to a large difference in the average detectability and therefore abundance estimate. Note that we can’t compare the AICs of models with different truncations, as the models use different data.</p>
+##            Estimate         SE         CV
+## Average p 0.3514386 0.01127421 0.03208017</code></pre>
+<p>Although there is not a large change in parameter estimate between the two models, this (along with the change in truncation) does lead to a large difference in the average detectability (and therefore any abundance estimates). Note that we can’t compare the AICs of models with different truncations, as the models use different data.</p>
 <figure>
 <img src='distance-simpledf_files/figure-html/amakihi-trunc-plots-1.png' width='864'height=''width.px='864'height.px='864' style='display: block'>
 <figcaption>
-Figure 12: Plots of a half-normal detection function fitted to the amakihi point transect data at two different truncation distances: 150m on the left and 82.5m on the right. Top row shows the fitted detection function with histogram of distances. Bottom row shows quantile-quantile plots.
+Figure 11: Plots of a half-normal detection function fitted to the amakihi point transect data at two different truncation distances: 150m on the left and 82.5m on the right. Top row shows the fitted detection function with histogram of distances. Bottom row shows quantile-quantile plots.
 </figcaption>
 </figure>
 <p>We can see that the quantile-quantile plots are much improved when truncation is set at 82.5m (right side), points are closer to the line <span class="math"><em>y</em> = <em>x</em></span>. Though, looking at the goodness of fit test results, we don’t see a very compelling story for this model.</p>
@@ -538,14 +514,13 @@ summary(hr.df.trunc.82.5)</code></pre>
 ## (Intercept) 3.4545394 0.06311553
 ## shape       0.8342906 0.06533068
 ## 
-##                          Estimate           SE         CV
-## Average p               0.3285788   0.02013387 0.06127561
-## Nhat in covered area 3782.9583996 247.91691631 0.06553519</code></pre>
+##            Estimate         SE         CV
+## Average p 0.3285788 0.02013387 0.06127561</code></pre>
 We can see that this model has a much better AIC than the half-normal model (hazard-rate: 10807.55, versus 10833.84 for half-normal). Plotting the detection function and performing goodness of fit tests indicates that this model is much better than the half-normal.
 <figure>
 <img src='distance-simpledf_files/figure-html/amakihi-hr-trunc-plots-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
 <figcaption>
-Figure 13: Plots of a hazard-rate detection function fitted to the amakihi point transect data. Left plot shows the fitted detection function with histogram of distances and the right shows quantile-quantile plots.
+Figure 12: Plots of a hazard-rate detection function fitted to the amakihi point transect data. Left plot shows the fitted detection function with histogram of distances and the right shows quantile-quantile plots.
 </figcaption>
 </figure>
 <pre><code>## Goodness of fit testing for distance sampling model
@@ -571,7 +546,6 @@ Figure 13: Plots of a hazard-rate detection function fitted to the amakihi point
 <p>Marques, T.A., Buckland, S.T., Borchers, D.L., Tosh, D. and McDonald, R.A. (2010) Point Transect Sampling Along Linear Features. <em>Biometrics</em>, <strong>66</strong>, 1247–1255.</p>
 <p>Marques, T.A., Thomas, L., Fancy, S. and Buckland, S.T. (2007) Improving estimates of bird density using multiple-covariate distance sampling. <em>The Auk</em>, <strong>124</strong>, 1229–1243.</p>
 <p>Rexstad, E.A., Miller, D., Flather, C., Anderson, E., Hupp, J. and Anderson, D.R. (1988) Questionable multivariate statistical inference in wildlife habitat and community studies. <em>The Journal of Wildlife Management</em>, <strong>52</strong>, 794–798.</p>
-<p>Thompson, S.K. (2002) <em>Sampling</em>, 2nd ed. Wiley.</p>
 </div>
 </div>
 <div class="footnotes">
@@ -580,8 +554,7 @@ Figure 13: Plots of a hazard-rate detection function fitted to the amakihi point
 <li id="fn1"><p>For convenience the data are bundled in an R-friendly format, although all of the code necessary for creating the data from the Distance project files is available at <a href="http://github.com/dill/mexico-data">github.com/dill/mexico-data</a>. The original OBIS-SEAMAP page for the data may be found at the <a href="http://seamap.env.duke.edu/dataset/25">SEFSC GoMex Oceanic 1996 survey page</a>.<a href="#fnref1">↩</a></p></li>
 <li id="fn2"><p>One such problem is when line transects are positioned to run parallel to some geographical feature that attracts animals (e.g. hedgerows). A number of articles try to address issues arising from such surveys by modelling the effect of the feature <span class="citation">(Marques et al., 2010, <span class="citation">Cox et al. (2011)</span>, <span class="citation">Marques et al. (2012)</span>)</span>.<a href="#fnref2">↩</a></p></li>
 <li id="fn3"><p>More generally, we’d write <span class="math">$\hat{P_a} = \int_0^w g(y;\boldsymbol{\theta}) \pi_y(y) \text{d}y$</span>.<a href="#fnref3">↩</a></p></li>
-<li id="fn4"><p>For now we’re assuming that we were able to count the group size accurately, though this can be a serious problem especially in marine surveys. We’ll revisit this topic when we talk about spatial modelling in the second part of the book.<a href="#fnref4">↩</a></p></li>
-<li id="fn5"><p>Data are again bundled with <code>Distance2</code>. Thanks go to Steven Fancy of the National Parks Service for providing the data. A more detailed analysis is provided in the associated paper <span class="citation">(Marques et al., 2007)</span>.<a href="#fnref5">↩</a></p></li>
+<li id="fn4"><p>Data are again bundled with <code>Distance2</code>. Thanks go to Steven Fancy of the National Parks Service for providing the data. A more detailed analysis is provided in the associated paper <span class="citation">(Marques et al., 2007)</span>.<a href="#fnref4">↩</a></p></li>
 </ol>
 </div>
 

@@ -153,7 +153,7 @@ img {
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="ap">
             <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
-            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
             <li><a href="appendix-.html">Projections etc</a></li>
                            <li class="divider"></li>
             <li><a href="acknowledgements.html">Acknowledgements</a></li>
@@ -179,7 +179,7 @@ img {
 
 
 <p>In the last chapter we looked at how we could model the probability of an animal being detected using the distances to the animals from the transect. A little thought leads us to believe that in addition to distance, other factors will influence the detection probability. For example: a pod of 50 whales will be much easier to spot than a single whale; it’s harder to see birds early in the morning when it’s dark and misty; and it’s much more difficult to see (or do) anything when the sea is extremely choppy. We’d like to take these factors into account when we’re building our detection function, to ensure that we can model the detection process as accurately as possible.</p>
-<p>Distance sampling methods have a property known as <em>pooling robustness</em> which means that if we assume that the heterogeneity in detectability is relatively small (i.e. there’s not much variation between animals in how detectable they are), then estimates of abundance will not be biased (though they might have high variance; <span class="citation">Burnham et al. (2004)</span>, Section 11.12). This means that usually we do not need to worry about bias but if we can model the heterogeneity in detectability then we can improve the precision of our abundance estimates.</p>
+<p>Distance sampling methods have a property known as <em>pooling robustness</em> which means that if we assume that the heterogeneity in detectability is relatively small (i.e. there’s not much variation between animals in how detectable they are), then estimates of abundance will not be biased (though they might have high variance; <span class="citation">Burnham et al. (2004)</span>, Section 11.12). This means that usually we do not need to worry about bias but if we can model the heterogeneity in detectability then we can improve the precision of our abundance estimates @[Marques:2007ey].</p>
 Let’s return to the pantropical spotted dolphin example from the previous chapter. During the survey data was collected on Beaufort sea state – a measure of the roughness of the sea (1 is “light air” with small waves, 5 “”fresh breeze&quot; with moderate waves<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>). Observers also recorded the size of each group of dolphins that were detected. We can plot these against the observed distances…
 <figure>
 <img src='distance-covardf_files/figure-html/dolphins-seastate-size-distance-1.png' width='864'height=''width.px='864'height.px='480' style='display: block'>
@@ -210,9 +210,8 @@ summary(hn.dolphins.size)</code></pre>
 ## (Intercept) 6.91408348 0.5091799
 ## size        0.03947174 0.0193140
 ## 
-##                          Estimate          SE        CV
-## Average p               0.6601482   0.0824859 0.1249506
-## Nhat in covered area 5235.9045503 255.7398782 0.0488435</code></pre>
+##            Estimate        SE        CV
+## Average p 0.6601482 0.0824859 0.1249506</code></pre>
 <p>We can see that the summary now includes an additional row of parameters, giving the effect of the parameter for group size. One way to investigate the effect of adding the size covariate graphically by plotting the fitted model:</p>
 <pre class="r"><code>plot(hn.dolphins.size)</code></pre>
 <figure>
@@ -238,7 +237,7 @@ $$</span><br /> we can look at the values of <span class="math">$\hat{p_i}$</spa
 <pre class="r"><code>quantile(predict(hn.dolphins.size))</code></pre>
 <pre><code>##        0%       25%       50%       75%      100% 
 ## 0.2850027 0.6430390 0.9411026 0.9996894 1.0000000</code></pre>
-<p>in both preceding results we see there is a wide range of probabilities of detection. These differences become important when using the Horvitz-Thompson-like estimator we saw in the previous chapter.</p>
+<p>in both preceding results we see there is a wide range of probabilities of detection. These differences will become important later in <a href="distance-abundance.html">Abdundance estimation</a>.</p>
 <p>We can look again at the question asked at the start of this chapter and ask how does group size affect probability of detection?</p>
 <pre class="r"><code>plot(mexdolphins$size, predict(hn.dolphins.size), xlab=&quot;Group size&quot;, ylab=&quot;Probability of detection&quot;)</code></pre>
 <figure>
@@ -247,13 +246,6 @@ $$</span><br /> we can look at the values of <span class="math">$\hat{p_i}$</spa
 Figure 3: Probability of detection plotted against observed group size, we can see that with increasing group size, we have increasing probability of detection.
 </figcaption>
 </figure>
-<div id="estimating-abundance" class="section level2">
-<h2>Estimating abundance</h2>
-<p>To estimate abundance when covariates are included in the detection function we use the Horvitz-Thompson-like estimator, simply indexing the probabilities of detection: <br /><span class="math">$$
-\hat{N} = \sum_{i=1}^n \frac{s_i}{\hat{p_i}},
-$$</span><br /> this formula is used to calculate the <code>Nhat in covered area</code> given in the <code>summary</code> output above. As in the previous chapter we are taking each group we observed and inflating its size based on the probability of detecting that group.</p>
-<p>Using this Horvitz-Thompson-like estimator we can calculate an average detectability over the observations. This can be done by noting that if the sum were simply over the numerator of the fraction, we’d have the number of individuals observed. We can then think of the estimate of <span class="math">$\hat{N}$</span> as this number divided by some “average” detection probability, we’ll refer to this as <span class="math">$\hat{P_a}$</span> and this is the quantity given in the <code>Average p</code> given in the <code>summary</code> output above (calculated as <span class="math">$\hat{P_a} = n/\hat{N}$</span>).</p>
-</div>
 <div id="adding-and-selecting-covariates" class="section level2">
 <h2>Adding and selecting covariates</h2>
 <p>We can add the Beaufort sea state covariate into the model, alongside group size by simply adding it into the formula:</p>
@@ -276,9 +268,8 @@ summary(hn.dolphins.size.beaufort)</code></pre>
 ## beaufort4    0.63115668 2.08747918
 ## beaufort5   -0.77217798 0.82851833
 ## 
-##                         Estimate          SE         CV
-## Average p               0.576381   0.1292324 0.22421350
-## Nhat in covered area 5557.720557 464.4983444 0.08357713</code></pre>
+##           Estimate        SE        CV
+## Average p 0.576381 0.1292324 0.2242135</code></pre>
 <p>As Beaufort sea state is included as a factor covariate, which gives us a number of extra parameters in the model. We can see the effect of adding the covariate in a plot:</p>
 <pre class="r"><code>plot(hn.dolphins.size.beaufort)</code></pre>
 <figure>
@@ -315,9 +306,8 @@ summary(hn.dolphins.beaufort)</code></pre>
 ## beaufort4   -0.23786783 0.4975554
 ## beaufort5   -0.03977453 0.4730534
 ## 
-##                          Estimate           SE        CV
-## Average p               0.6781778   0.08790063 0.1296130
-## Nhat in covered area 6434.2758324 912.60499889 0.1418349</code></pre>
+##            Estimate         SE       CV
+## Average p 0.6781778 0.08790063 0.129613</code></pre>
 <p>We can now build a table<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a> :</p>
 <table>
 <thead>
@@ -375,7 +365,7 @@ summary(hn.dolphins.beaufort)</code></pre>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>In this chapter we’ve seen how adding covariates to the detection function can account for heterogeneity in the detection probability and improve precision of estimates of abundance. Covariate models make intuitive sense too, since we do not expect all individuals (or groups) in the population to have the same detectability at a given distance. This intuitive interpretation allows for direct interpretation of covariates, which may be biologically interesting. The ability to include covariates in an analysis will be particularly useful in <a href="distance-abundance.html">Adundance estimation</a>, where we will investigate stratification of abundance estimates by covariate.</p>
+<p>In this chapter we’ve seen how adding covariates to the detection function can account for heterogeneity in the detection probability. Covariate models make intuitive sense too, since we do not expect all individuals (or groups) in the population to have the same detectability at a given distance. This intuitive interpretation allows for direct interpretation of covariates, which may be biologically interesting. The ability to include covariates in an analysis will be particularly useful in <a href="distance-abundance.html">Adundance estimation</a>, where we will investigate stratification of abundance estimates by covariate.</p>
 <div class="references">
 <h2 id="references" class="unnumbered">References</h2>
 <p>Beavers, S. and Ramsey, F. (1998) Detectability analysis in transect surveys. <em>Journal of Wildlife Management</em>, 948–957.</p>
@@ -389,8 +379,8 @@ summary(hn.dolphins.beaufort)</code></pre>
 <hr />
 <ol>
 <li id="fn1"><p>The scale actually goes up to 12 (“hurricane”) and beyond, see <a href="https://en.wikipedia.org/wiki/Beaufort_scale"><a href="https://en.wikipedia.org/wiki/Beaufort_scale" class="uri">https://en.wikipedia.org/wiki/Beaufort_scale</a></a> and <a href="http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf"><a href="http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf" class="uri">http://www.metoffice.gov.uk/media/pdf/4/4/Fact_Sheet_No._6_-_Beaufort_Scale.pdf</a></a> for more information. One may often find that Beaufort sea state is recorded as decimals (state of 4.5 for example), it’s tricky to work out what to do with these and is worth consulting those who collected the data.<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Note that a covariate called <code>size</code> has a special meaning in <code>Distance2</code> as it is used in the estimation of abundance via the Horvitz-Thompson estimator (see <a href="distance-simpledf.html">Models for detectability</a>).<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>Note that when we refer to <span class="math"><em>P</em><sub><em>a</em></sub></span> as the “average detection probability”. The average is calculated over the <em>observations</em>. We used the same term for <span class="math"><em>P</em><sub><em>a</em></sub></span> in the previous chapter when talking about non-covariate models to be consistent with what is reported in <code>Distance2</code>.<a href="#fnref3">↩</a></p></li>
+<li id="fn2"><p>Note that a covariate called <code>size</code> has a special meaning in <code>Distance2</code> as it is used in the estimation of abundance via the Horvitz-Thompson estimator (see <a href="distance-abundance.html">Adundance estimation</a>).<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Note that when we refer to <span class="math"><em>P</em><sub><em>a</em></sub></span> as the “average detection probability”. The average is calculated over the <em>observations</em>. We used the same term for <span class="math"><em>P</em><sub><em>a</em></sub></span> in the previous chapter when talking about non-covariate models to be consistent with what is reported in <code>Distance2</code>. See <a href="distance-abundance.html">Abundance estimation</a> for more information on how this is calculated.<a href="#fnref3">↩</a></p></li>
 <li id="fn4"><p>Strictly speaking we can write the probability of detection as a function of the covariates: <span class="math">$\hat{p_i}(z_i)$</span>, though the shorter <span class="math"><em>p</em><sub><em>i</em></sub></span> form is used to save space. Hopefully the subscript will be a sufficient reminder.<a href="#fnref4">↩</a></p></li>
 <li id="fn5"><p>More details on how this was done in <a href="distance-moredf.html">Improving the fit of detection functions</a>.<a href="#fnref5">↩</a></p></li>
 </ol>
