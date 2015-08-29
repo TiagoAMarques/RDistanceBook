@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Variance estimation</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">Variance estimation</h1>
+</div>
+
+
+<p>In the last chapter we saw how to estimate abundance, but more important than these abundance estimates alone (referred to as <em>point estimates</em>), are their variances. The <span class="math">$\hat{N}$</span>s we estimated are realisations of a stochastic process, that’s why we are leveraging statistical machinery against the problem.</p>
+<p>Understanding where uncertainty comes from allows one to improve a survey design and check that models are reasonable. Presenting uncertainty in an understandable way to those who want to use your results also allows them to understand the potential shortcomings of the results.</p>
+<p>In this chapter we will talk about how to estimate uncertainty in estimates of abundance, and in particular <em>how</em> these expressions are derived, so you can get an idea of what the uncertainty represents. Although this chapter is a little more statistically heavy, hopefully in understanding the material presented here you will be able to better understand what the causes of large uncertainties might be in your model – that is to say: “stick with it, it’s worth it”.</p>
+<div id="where-does-uncertainty-come-from" class="section level2">
+<h2>Where does uncertainty come from?</h2>
+<p>We can identify the sources of uncertainty in our abundance estimates by thinking about the Horvitz-Thompson-like estimator for the abundance we saw in <a href="distance-abundance.html">Estimating abundance</a>:</p>
+<p><br /><span class="math">$$
+\hat{N} = \frac{A_\mathcal{R}}{A_\text{covered}}\sum_{i=1}^n \frac{s_i}{\hat{p_i}}.
+$$</span><br /></p>
+<p>Thinking about which components of the estimator we are uncertain about, we can see that we have at least:</p>
+<ul>
+<li><em>Number of observations</em>: If we repeated our survey, we would expect that the number of animals we observed (<span class="math"><em>n</em></span>) to change each time. This is because the detection process is random and also because we don’t expect the animals to be stationary in the intervening period between surveys. It’s convenient (when estimating the uncertainty) for us to think about the <em>encounter rate</em> rather than just <span class="math"><em>n</em></span>. For line transects the encounter rate is defined as <span class="math"><em>n</em>/<em>L</em></span> (where <span class="math"><em>L</em></span> is the total length of the lines surveyed). For point transects the encounter rate is defined as <span class="math"><em>n</em>/<em>K</em></span> (where <span class="math"><em>K</em></span> is the total number of points visited).</li>
+<li><em>Model parameters</em>: since we estimate the parameters of the detection function, we have some certainty about the values of those parameters. For example, as we have seen so far in the <code>summary</code> results, the scale parameter(s) of the half-normal detection function are accompanied by standard errors. We need to incorporate that uncertainty into our estimates of probability/probabilities of detection (<span class="math"><em>p</em><sub><em>i</em></sub></span>) and hence abundance (<em>propagating</em> the uncertainty).</li>
+</ul>
+<p>Plus, perhaps:</p>
+<ul>
+<li><em>Group size</em>: We account for animals in groups via <span class="math"><em>s</em><sub><em>i</em></sub></span> above, however, it is often difficult to count how many animals are in the group (particularly in a marine situation where cetaceans or birds may be diving and surfacing). We may therefore attach uncertainty to our measurements of group size (<span class="math"><em>s</em><sub><em>i</em></sub></span>).</li>
+<li><em>Line length</em> (for line transect models): If the study design was randomly placed (either completely or as a zig-zag or grid offset<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>), the line lengths may be random, as various physical features may get in the way of our line placement.</li>
+</ul>
+<div id="encounter-rate-uncertainty" class="section level3">
+<h3>Encounter rate uncertainty</h3>
+<p>As mentioned above, it’s easier for us to think about the uncertainty in <span class="math"><em>n</em>/<em>L</em></span>, rather than <span class="math"><em>n</em></span> alone. The estimators themselves look much like the estimators of variances you’ll have seen in a regular statistics class. When we have a line transect analysis, we need to take into account the line length, so we weight by this.</p>
+<p>For line transects we can estimate the variance of the encounter rate as<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> <br /><span class="math">$$
+\widehat{\text{Var}}\left(\frac{n}{L}\right) = \frac{K}{L^2 (K-1)} \sum_{k=1}^{K} l_k^2 \left( \frac{n_k}{l_k} - \frac{n}{L}\right)^2
+$$</span><br /> where <span class="math"><em>l</em><sub><em>k</em></sub></span> is the length of line <span class="math"><em>k</em></span> (which there are <span class="math"><em>K</em></span> of) and <span class="math"><em>L</em></span> is the total line length (i.e. <span class="math">∑<sub><em>k</em></sub><em>l</em><sub><em>k</em></sub> = <em>L</em></span>). The number of observations per line is denoted <span class="math"><em>n</em><sub><em>k</em></sub></span>, so <span class="math"><em>n</em> = ∑<sub><em>k</em></sub><em>n</em><sub><em>k</em></sub></span>.</p>
+<p>Whereas for point transects we have: <br /><span class="math">$$
+\widehat{\text{Var}}\left(\frac{n}{Kt}\right) = \frac{1}{t^2K(K-1)} \sum_{k=1}^{K} \left( n_k - \frac{n}{K}\right)^2
+$$</span><br /> if there were <span class="math"><em>K</em></span> points, each of which was visited <span class="math"><em>t</em></span> times<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>, so the total number of survey points is <span class="math"><em>K</em><em>t</em></span>. These estimators have quite similar forms, though for the point case, we don’t have a “length” to deal with, we instead think about numbers of visits and points.</p>
+<p>Note that there are several variations on the estimator of the variance of encounter rate. The variations can be useful when particular survey setups are used. These are covered and compared comprehensively (though perhaps rather mathematically) in <span class="citation">Fewster et al. (2009)</span>. We’ll stick to using these estimators in this chapter, as they generally performs well in a wide variety of situations.</p>
+</div>
+<div id="detection-function-uncertainty" class="section level3">
+<h3>Detection function uncertainty</h3>
+<p>The uncertainty from the estimation of the detection function parameters comes from usual maximum likelihood theory. In general in order to find parameters, we maximise a likelihood (a product of the probability densities for our observerations); the parameter values with the highest likelihood will be those selected.</p>
+<p>As a simple analogy, if we thought of a hazard-rate model, we could think of it’s two parameters (shape and scale parameters) as the axes of a coordinate system and the likelihood of the parameters as the height of a given point in that system. We’re interested in finding the location of the highest point (the maximum likelihood estimate; MLE) – this is what the optimizer will try to do<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
+<p>Thinking about being at that highest point, as we look around ideally we’d like to be at the top of a very sharp spike. On the other hand, we may actually just be on a ridge (with a thin path of approximately equal height stretching out in front of us) or we might just be on a small, flattish hill. We can characterise how “pointy” the MLE is mathematically by looking at it’s second derivatives (called the <em>Hessian matrix</em>). If we’re on a ridge or a flat hill we are uncertain about our estimate, since there are other values that are nearby that give very similar likelihoods for different parameter values<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>.</p>
+<p>We can calculate the uncertainty of the model parameters by taking the Hessian matrix (which is a byproduct of the optimisation anyway) and inverting it, this will give us the variance of the parameters.</p>
+<p>To convert our uncertainty in parameters to uncertainty in the probability of detection, we use the <em>sandwich estimator</em>. This takes our parameter variance and pre- and post-multiplies it by the derivatives of the Horvitz-Thompson estimator with respect to the parameters – moving the estimate of variance into detectability-space rather than parameter-space: <br /><span class="math">$$
+\text{Var}(\hat{P}_a) = \left[ \frac{\partial \hat{P}_a}{\partial \boldsymbol{\theta}} {\Bigg|}_{\boldsymbol{\theta}=\hat{\boldsymbol{\theta}}}\right]^T
+(-H)^{-1} \left[ \frac{\partial \hat{P}_a}{\partial \boldsymbol{\theta}} {\Bigg|}_{\boldsymbol{\theta}=\hat{\boldsymbol{\theta}}}\right]
+$$</span><br /> where <span class="math">$\frac{\partial \hat{P}_a}{\partial \boldsymbol{\theta}}$</span> is the derivative of the probability of detection with respect to the model parameters (the “bread” of the sandwich) and <span class="math"><em>H</em><sup> − 1</sup></span> is the inverse of the Hessian matrix (the “filling” of the sandwich). The vertical lines with <span class="math">$\boldsymbol{\theta}=\hat{\boldsymbol{\theta}}$</span> at the bottom indicate that we evaluate the derivatives at their maximum likelihood values.</p>
+<p>Note that in the above we use <span class="math"><em>P</em><sub><em>a</em></sub></span> even in the covariate case. When covariates are included in the detection function we can find <span class="math"><em>P</em><sub><em>a</em></sub></span> by working out what the value of <span class="math"><em>P</em><sub><em>a</em></sub></span> would be needed to get the estimated <span class="math">$\hat{N}$</span> by calculating <span class="math">$P_a=n/\hat{N}$</span>.</p>
+</div>
+<div id="putting-it-together" class="section level3">
+<h3>Putting it together</h3>
+<p>We have now found the uncertainty in both the parameter estimates and the encounter rate. We now assume that these are independent and use the fact that squared coefficients of variation sum<a href="#fn6" class="footnoteRef" id="fnref6"><sup>6</sup></a> <br /><span class="math">$$
+\text{CV}(\hat{N})^2 = \text{CV}\left(\frac{n}{L}\right)^2 + \text{CV}\left(\frac{1}{\hat{P_a}}\right)^2
+$$</span><br /> for line transects or <br /><span class="math">$$
+\text{CV}(\hat{N})^2 = \text{CV}\left(\frac{n}{K}\right)^2 + \text{CV}\left(\frac{1}{\hat{P_a}}\right)^2
+$$</span><br /> for point transects.</p>
+<p>It is usually the case that the uncertainty stemming from the parameters of the detection function is dwarfed by the uncertainty from the encounter rate. This can be a useful check that calculations are correct.</p>
+<p>These calculations are made by <code>Distance2</code> when <code>abundance_estimate</code> is called to calculate abundance. As one might expect, <code>ER_Variance</code> gives the variance of <span class="math">$\frac{n}{K}$</span> and <code>Model_Variance</code> gives the variance of <span class="math">$\hat{P_a}$</span>.</p>
+</div>
+</div>
+<div id="post-stratification" class="section level2">
+<h2>Post-stratification</h2>
+<p>As mentioned in the previous chapter, stratification will reduce variance. This is because we are breaking up the CV terms in the above equations into sums of groups of observations that are more similar (e.g. they are from the same habititat type). This kind of post-stratification can be very useful.</p>
+</div>
+<div id="recap" class="section level2">
+<h2>Recap</h2>
+<p>In this chapter we’ve looked at the potential sources of uncertainty in our estimates of abundance. We’ve looked at one possible way to estimate uncerttainty coming from the encounter rate (though there are many options depending on the survey setup) and we’ve seen how uncertainty in detection function parameters impacts our overall uncertainty via the detectability.</p>
+</div>
+<div id="futher-reading" class="section level2">
+<h2>Futher reading</h2>
+<ul>
+<li><span class="citation">Barry and Welsh (2001)</span> initially prompted the writing of the next paper, questioning the then “standard” distance sampling variance estimator.</li>
+<li><span class="citation">Fewster et al. (2009)</span> gives a more technical overview of the various variance estimators for distance sampling and a large simulation study evaluating them.</li>
+<li><span class="citation">Innes et al. (2002)</span> provides an interesting account of how one addresses abundance estimation for a complex survey situation.</li>
+<li><span class="citation">Strindberg and Buckland (2004)</span> gives information on zig-zag designs for line transect surveys.</li>
+<li><span class="citation">Buckland et al. (2007)</span> gives information on line transect surveying for plants and special considerations necessary.</li>
+</ul>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Barry, S. and Welsh, A. (2001) Distance sampling methodology. <em>Journal of the Royal Statistical Society. Series B, Statistical Methodology</em>, <strong>63</strong>, 23–31.</p>
+<p>Buckland, S.T., Borchers, D.L., Johnston, A., Henrys, P.A. and Marques, T.A. (2007) Line Transect Methods for Plant Surveys. <em>Biometrics</em>, <strong>63</strong>, 989–998.</p>
+<p>Fewster, R.M., Buckland, S.T., Burnham, K.P., Borchers, D.L., Jupp, P.E., Laake, J.L., et al. (2009) Estimating the Encounter Rate Variance in Distance Sampling. <em>Biometrics</em>, <strong>65</strong>, 225–236.</p>
+<p>Goodman, L.A. (1960) On the Exact Variance of Products. <em>Journal of the American Statistical Association</em>, <strong>55</strong>, 708.</p>
+<p>Innes, S., Heide-J<span>ø</span>rgensen, M.P., Laake, J.L., Laidre, K.L., Cleator, H.J., Richard, P., et al. (2002) Surveys of belugas and narwhals in the Canadian High Arctic in 1996. <em>NAMMCO Scientific Publications</em>, <strong>4</strong>, 169–190.</p>
+<p>Strindberg, S. and Buckland, S.T. (2004) Zigzag Survey Designs in Line Transect Sampling., <strong>9</strong>, 443–461.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Survey design is out of the scope for us, though there are many good references on the topic. See <a href="#further-reading">Further reading</a>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>This is the estimator “R2” from <span class="citation">Fewster et al. (2009)</span>.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>This is estimator “P1” from <span class="citation">Fewster et al. (2009)</span>. Note that there are ifferent estimators for different survey setups (e.g. when each point is surveyed a different number of times), see Web Appendix B of <span class="citation">Fewster et al. (2009)</span>. The authors note that results vary based on the statification scheme used.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>It’s easy to think theoretically and think we can always find the maximum likelihood estimate (and therefore the “best” parameter estimates) but optimisation is hard so the best we can hope for is a “locally” optimum result (the best result for where we looked).<a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p>We actually use the <em>inverse</em> of the Hessian, since the derivative of a very pointy peak would be large and this is actually when we are very certain about the paramers, therefore we invert.<a href="#fnref5">↩</a></p></li>
+<li id="fn6"><p>Note that squared coefficients of variation sum <em>approximately</em>, see <span class="citation">Goodman (1960)</span>.<a href="#fnref6">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

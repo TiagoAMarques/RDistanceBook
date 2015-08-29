@@ -153,7 +153,7 @@ img {
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="ap">
             <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
-            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
             <li><a href="appendix-.html">Projections etc</a></li>
                            <li class="divider"></li>
             <li><a href="acknowledgements.html">Acknowledgements</a></li>
@@ -231,9 +231,12 @@ Figure 3: Half-normal detection function (solid black line) fitted to the Gulf o
 ##             Estimate        SE
 ## (Intercept) 8.579708 0.2300667
 ## 
-##            Estimate         SE        CV
-## Average p 0.7230935 0.09200806 0.1272423</code></pre>
-<p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, parameter estimates and finally the “<code>Average p</code>”, along with their associated uncertainties.</p>
+## Kolmogorov-Smirnov p-value : 0.1447243 
+## Cramer-von Mises p-value   : 0.3236715 
+## 
+##            Estimate        SE        CV
+## Average p 0.7230935 0.1370333 0.1895098</code></pre>
+<p>The summary tells us how many observations were used to fit the data, the truncation distance, what detection function we used, the AIC, goofness of fit test <span class="math"><em>p</em></span>-values, parameter estimates and “<code>Average p</code>”, along with their associated uncertainties.</p>
 <p>It is worth noting that the parameter estimate (marked <code>(Intercept)</code>) is on the log scale, so <span class="math"><em>σ</em> = exp</span> 8.58 (why the parameters are reported in this way will become apparent in the next chapter, <a href="distance-covardf.html">What else affects detectability?</a>).</p>
 The half-normal is not the only possible detection function form (indeed, there are many options as we will see in <a href="distance-moredf.html">Improving the fit of detection functions</a>). Another possibility is the <em>hazard-rate</em> detection function, which is more flexible, but requires the estimation of an extra parameter. The plot below shows examples of hazard-rate detection functions.
 <figure>
@@ -270,8 +273,11 @@ Figure 5: Hazard-rate detection function (solid black line) fitted to the Gulf o
 ## (Intercept) 7.945285 0.9700149
 ## shape       0.000000 0.7602676
 ## 
+## Kolmogorov-Smirnov p-value : 0.6058832 
+## Cramer-von Mises p-value   : 0.634694 
+## 
 ##            Estimate        SE        CV
-## Average p 0.5754871 0.2206894 0.3834828</code></pre>
+## Average p 0.5754871 0.3286864 0.5711446</code></pre>
 <p>Note that there are now two rows of parameters, one for scale and then one for shape.</p>
 <p>The hazard-rate model has a rather different average detection probability from the half-normal model (0.5755 rather than 0.7231 for the half-normal) and hence we’ll end up with rather different abundance estimates. How do we decide between these two models?</p>
 </div>
@@ -409,6 +415,9 @@ Figure 8: Histogram of observed distances to amakihi observations.
 ##             Estimate          SE
 ## (Intercept) 3.742683 0.009661874
 ## 
+## Kolmogorov-Smirnov p-value : 1.346919e-11 
+## Cramer-von Mises p-value   : 1.236632e-05 
+## 
 ##             Estimate          SE         CV
 ## Average p 0.05701686 0.001101779 0.01932374</code></pre>
 <p>We estimate $P_a=$0.057. This time we use <span class="math"><em>π</em><sub><em>r</em></sub>(<em>r</em>) = 2<em>r</em>/<em>w</em><sup>2</sup></span>, so <br /><span class="math">$$
@@ -464,6 +473,9 @@ hn.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5)<
 ##             Estimate         SE
 ## (Intercept) 3.707559 0.01210836
 ## 
+## Kolmogorov-Smirnov p-value : 3.466577e-08 
+## Cramer-von Mises p-value   : 5.69763e-07 
+## 
 ##            Estimate          SE         CV
 ## Average p 0.1474673 0.003543475 0.02402889</code></pre>
 <pre class="r"><code>summary(hn.df.trunc.82.5)</code></pre>
@@ -478,6 +490,9 @@ hn.df.trunc.82.5 &lt;- ds(amakihi, transect=&quot;point&quot;, truncation=82.5)<
 ## Detection function parameters
 ##             Estimate         SE
 ## (Intercept) 3.580267 0.02011161
+## 
+## Kolmogorov-Smirnov p-value : 0.0003152646 
+## Cramer-von Mises p-value   : 0.003577949 
 ## 
 ##            Estimate         SE         CV
 ## Average p 0.3514386 0.01127421 0.03208017</code></pre>
@@ -513,6 +528,9 @@ summary(hr.df.trunc.82.5)</code></pre>
 ##              Estimate         SE
 ## (Intercept) 3.4545394 0.06311553
 ## shape       0.8342906 0.06533068
+## 
+## Kolmogorov-Smirnov p-value : 0.06280827 
+## Cramer-von Mises p-value   : 0.3344041 
 ## 
 ##            Estimate         SE         CV
 ## Average p 0.3285788 0.02013387 0.06127561</code></pre>

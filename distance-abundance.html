@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Estimating abundance</title>
+
+<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-.html">Why build spatial models?</a></li>
+            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-.html">Model formulation</a></li>
+            <li><a href="dsm-.html">Crash course in GAMs</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Response distributions</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="header">
+<h1 class="title">Estimating abundance</h1>
+</div>
+
+
+<p>So far we’ve looked at how to model the probability of detection by modelling the detection function. Though this is interesting in itself, we usually only use the detection function as a stepping stone to get to an abundance estimate for the population that we’re interested in. This chapter explores how to estimate abundance once a detection function has been fitted, revisiting some of the examples we’ve seen so far and introducing some new ones.</p>
+<p>Our basic technique in this chapter is to estimate the abundance for the area we covered in the survey, then scale this up to the larger study area. This scaling up involves assuming the area we scale up to is the same as the area that we surveyed and that the whole area is homogeneous. Sometimes that’s not reasonable, so we’ll go on to talk about estimating abundance in smaller areas (<em>strata</em>), for which we believe our assumption of homogeneity is reasonable.</p>
+<div id="abundance-in-covered-area" class="section level2">
+<h2>Abundance in covered area</h2>
+<p>One of the outputs of the <code>summary</code>s that we saw in the previous sections is the average detectability<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. In <a href="distance-covardf.html">What else affects detectability?</a> we saw that different average detectabilities were calculated for each unique covariate combination (in models where covariates were included). We can use the average detectability to estimate abundance.</p>
+<p>We’ll begin by estimating the number of animals in the covered area (that is, the area we actually surveyed – the area we covered by transects out to the truncation distance). To compute this abundance estimate (which we’ll denote <span class="math">$\hat{N}_\text{covered}$</span>) we use a <em>Horvitz-Thompson-like estimator</em> <span class="citation">(Thompson, 2002)</span>, which one can think of as “correcting” the size of the observations based on the probability of detection (more precisely we re-weight by the inverse of the average probability of detection). The Horvitz-Thompson estimator for the abundance in the covered area is defined as<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> <br /><span class="math">$$
+\hat{N}_\text{covered} = \sum_{i=1}^n \frac{s_i}{\hat{P_a}},
+$$</span><br /> where <span class="math"><em>s</em><sub><em>i</em></sub></span> is the size of the group of the <span class="math"><em>i</em><sup>th</sup></span> observation. So for each group (or individual, if <span class="math"><em>s</em><sub><em>i</em></sub> = 1</span> for every observation) we saw, inflate them by <span class="math"><em>P</em><sub><em>a</em></sub></span>, then sum up over the groups.</p>
+<p>Returning to the pantropical dolphins, we can do this very simply in R (recalling that the <code>predict</code> function will give us the average probabilities of detection for the observations):</p>
+<pre class="r"><code>data(mexdolphins)
+mex.hn &lt;- ds(mexdolphins, truncation=8000, model=df(scale=~size))
+# we use is.na() here to remove the sampling locations where no observations
+# occurred. See &quot;Getting your data into shape&quot;.
+sum(mexdolphins$size[!is.na(mexdolphins$size)]/predict(mex.hn))</code></pre>
+<pre><code>## [1] 5235.905</code></pre>
+<p>In this case we fitted a simple half-normal model without covariates but the same code would work for a model where a covariate is included, as <code>predict</code> will give the correct average probabilities of detection. In this case we change our notation slightly mathematically, denoting the average probability of detection per observation as <span class="math"><em>p</em><sub><em>i</em></sub></span>:</p>
+<p><br /><span class="math">$$
+\hat{N}_\text{covered} = \sum_{i=1}^n \frac{s_i}{\hat{p_i}},
+$$</span><br /></p>
+<p>Note that above we estimated the number of <em>individuals</em> in the covered area. It may be interesting to calculate the number of <em>groups</em> that we saw, for example if animals occur in family/social units. In which case we can replace <code>mexdolphins$size</code> with <code>1</code> and obtain a <em>group abundance</em>:</p>
+<pre class="r"><code>sum(1/predict(mex.hn))</code></pre>
+<pre><code>## [1] 71.19614</code></pre>
+<p>Now, neither of these numbers are particularly useful on their own, we’d rather know about the wider study area.</p>
+</div>
+<div id="scaling-up-abundance-estimates" class="section level2">
+<h2>Scaling up abundance estimates</h2>
+<p>The beauty of the Horvitz-Thompson estimator for the covered area is we require only probabilities in order to estimate abundance (we’ll denote the abundance generally as <span class="math">$\hat{N}$</span>). To extrapolate beyond the covered area, we now need to include the area covered by transects (denoted <span class="math"><em>A</em><sub>covered</sub></span>) and the area of the region we want to scale up to (which we’ll denote <span class="math"><em>A</em><sub>ℛ</sub></span>). More precisely, we use the following estimator:</p>
+<p><br /><span class="math">$$
+\hat{N} = \frac{A_\mathcal{R}}{A_\text{covered}}\sum_{i=1}^n \frac{s_i}{\hat{p_i}}.
+$$</span><br /></p>
+<p>Now we could modify our R code, above and calculate the covered area and total area and simply pre-multiply by the ratio of these quantities but this will become unwieldy when it comes to calculations for multiple strata (see below) and more importantly, when it comes to estimating our uncertainty in our estimates of abundance (see <a href="distance-uncertainty.html">How certain are we in our estimates?</a>). We can instead use the function <code>abundance_estimate</code> to calculate the abundance for us, provided we have our data in a particular format (“<code>flatfile</code>”, see <a href="appendix-dataformat.html">Getting your data into shape</a>).</p>
+<p>Let’s try this out using the <code>mexdolphins</code> data:</p>
+<pre class="r"><code>mex.abund &lt;- abundance_estimate(mex.hn, ~1)</code></pre>
+<p>We’ve supplied two arguments to the function: a fitted detection function (which will contain the relevant data) and a formula that defines the stratification (see below for more on this). Here we specify the formula as simply <code>~1</code> indicating that there is no stratification and <code>abundance_estimate</code> will use the <code>Area</code> column in <code>mexdolphins</code> to calculate <span class="math"><em>A</em><sub>ℛ</sub></span>.</p>
+<p>We can see abundance estimates and other summary statistics by just printing the object that <code>abundance_estimate</code> returns (or by not supplying an object to store the result, the same information will be printed).</p>
+<pre class="r"><code>mex.abund</code></pre>
+<pre><code>## Summary statistics:
+##             Area  Effort CoveredArea n_observations n_samples           ER
+## Total 1.6793e+12 5598900 89582400000             47        45 8.394506e-06
+## 
+## Abundance estimates:
+##       Estimate  Variance        CV Model_Variance ER_Variance
+## Total 98151.58 606385676 0.2508864       22960681   583424996</code></pre>
+<p>The first table lists summary statistics, in order:</p>
+<ul>
+<li><code>Area</code>: total study area, <span class="math"><em>A</em><sub>ℛ</sub></span>,</li>
+<li><code>Effort</code>: total survey effort (line length or number of points),</li>
+<li><code>CoveredArea</code>: area covered by the survey, <span class="math"><em>A</em><sub>covered</sub></span>,</li>
+<li><code>n_observations</code>: number of observations,</li>
+<li><code>n_samples</code>: number of transects visited,</li>
+<li><code>ER</code>: encounter rate, number of observations, divided by total line length (more on this in the next chapter, <a href="distance-uncertainty.html">How certain are we in our estimates?</a>).</li>
+</ul>
+<p>Note that the numbers for <code>Area</code>, <code>Effort</code> and <code>CoveredArea</code> above are very large as they are in measured metres (squared for <code>Area</code> and <code>CoveredArea</code>).</p>
+<p>The second table lists the abundance estimate (<code>Estimate</code>) then various metrics relating to our uncertainty in that estimate. The latter will be covered in detail in the next chapter, <a href="distance-uncertainty.html">How certain are we in our estimates?</a>.</p>
+</div>
+<div id="stratification" class="section level2">
+<h2>Stratification</h2>
+<p>The above abundance estimate assumes that the whole study area is homogeneous and that the pantropical spotted dolphins are uniformly distributed within it. Unfortunately this usually is not true. We often survey terrestrial areas where part of the study area is a bog, part is open fields part is forested; or a marine environment where depth, chlorophyll or salinity changes in a way that affects the study species. In later chapters we’ll find that in the case of the Gulf of Mexico, dolphins are influenced by the water depth (see also <span class="citation">Miller et al. (2013)</span>, Appendix A).</p>
+<div id="southern-ocean-minke-whales" class="section level3">
+<h3>Southern Ocean Minke whales</h3>
+<p>To illustrate the use of strata we now look at some simulated data based on a survey of Antarctic minke whales (<em>Balaenoptera bonaerensis</em>). The data is simulated from models fitted to data from the International Whaling Commission’s International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys <span class="citation">(Branch and Butterworth, 2001)</span>. An example of the simulated data<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> is shown below. The analysis here is based on examples originally written by Eric Rexstad<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
+<figure>
+<img src='distance-abundance_files/figure-html/hack-to-load-minke-1.png' width='465.6'height=''width.px='465.6'height.px='297.6' style='display: block'>
+<figcaption>
+Figure 1: Transects (lines) and observations (points) generated from and analysis the IWC’s IDCR-SOWER 1992-1993 austral summer surveys. The studt area has been separated into two strata, North and South (above and below the stepped line).
+</figcaption>
+</figure>
+<p>Note that there is not only more effort (more transects) near the shore (furthest south wiggly line) but also more observations. It is thought that minke whales are associated to the sea ice, where they feed on krill <span class="citation">(Williams et al., 2014)</span>.</p>
+<p>We begin, as usual by fitting a detection function to the data, truncating at 1.5km:</p>
+<pre class="r"><code># load the minke data
+data(minke)
+minke$Region.Label.Area &lt;- minke$Area
+minke_hn &lt;- ds(minke, truncation=1.5)
+summary(minke_hn)</code></pre>
+<pre><code>## Summary of fitted detection function
+## Transect type          : line 
+## Number of observations : 88 
+## Distance range         : 0 - 1.5 
+## AIC                    : 46.87216 
+## 
+## Detection function     : Half-normal 
+## 
+## Detection function parameters
+##               Estimate        SE
+## (Intercept) -0.3411766 0.1070304
+## 
+## Kolmogorov-Smirnov p-value : 0.6694128 
+## Cramer-von Mises p-value   : 0.9194977 
+## 
+##            Estimate         SE         CV
+## Average p 0.5733038 0.05489783 0.09575695</code></pre>
+<p>The area above the stepped line in the above map is the North region and below is the South. We can estimate the abundance for each of these areas individually using the Horvitz-Thompson like estimator for each area. For example, for the North area:</p>
+<p><br /><span class="math">$$
+\hat{N}_\text{North} = \frac{A_\text{North}}{A_\text{North, covered}}\sum_{i \in \text{North}} \frac{s_i}{\hat{p_i}}.
+$$</span><br /></p>
+<p>where <span class="math"><em>A</em><sub>North</sub></span> is the total area of the North study area, <span class="math"><em>A</em><sub>North, covered</sub></span> is the covered area within the North study area, and <span class="math"><em>i</em> ∈ North</span> denotes the observations in the North area.</p>
+<p>The column <code>Region.Label</code> separates the Northern and Southern regions of the study area, we can find their areas with the following code:</p>
+<pre class="r"><code>unique(minke[,c(&quot;Region.Label&quot;, &quot;Region.Label.Area&quot;)])</code></pre>
+<pre><code>##    Region.Label Region.Label.Area
+## 1         South             84734
+## 46        North            630582</code></pre>
+<p>As before, we supply the fitted detection function object and a formula. This time the formula is <code>~Region.Label</code>:</p>
+<pre class="r"><code>abundance_estimate(minke_hn, ~Region.Label)</code></pre>
+<pre><code>## Summary statistics:
+##         Area  Effort CoveredArea n_observations n_samples         ER
+## North 630582 1358.38     4075.14             49        12 0.03607238
+## South  84734  484.41     1453.23             39        13 0.08051031
+## Total 715316 1842.79     5528.37             88        25 0.04775368
+## 
+## Abundance estimates:
+##       Estimate   Variance        CV Model_Variance ER_Variance
+## North 13225.44 24668600.8 0.3755450      1320027.6  23348573.1
+## South  3966.46   913862.5 0.2410113       118732.3    795130.3
+## Total 17191.90 26374245.7 0.2987212      2230542.3  24143703.4</code></pre>
+<p>The output is similar to that of the pantropical spotted dolphins, though now we have an extra two lines, giving the statistics for each strata (note the the areas are as we expected).</p>
+<p>As a comparison of the resulting abundance estimates, we can set the total area and look at what the abundance would be estimated as if we considered a non-stratified analysis:</p>
+<pre class="r"><code>minke_unstratified &lt;- minke
+minke_unstratified$Area &lt;- sum(unique(minke_unstratified$Region.Label.Area))
+minke_hn_unstrat &lt;- ds(minke_unstratified, truncation=1.5)
+abundance_estimate(minke_hn_unstrat, ~1)</code></pre>
+<pre><code>## Summary statistics:
+##         Area  Effort CoveredArea n_observations n_samples         ER
+## Total 715316 1842.79     5528.37             88        25 0.04775368
+## 
+## Abundance estimates:
+##       Estimate Variance        CV Model_Variance ER_Variance
+## Total 19860.89 25049488 0.2520001        2976870    22072619</code></pre>
+<p>As we can see, ignoring the stratification leads to a much larger estimate of abundance, since we are extrapolating the average abundance of the two areas over the two strata, which have rather different numbers of observations (perhaps due to the ice association mentioned above).</p>
+<p>We can also include the region as a covariate in our detection function and again estimate the abundance:</p>
+<pre class="r"><code>minke_hn_region &lt;- ds(minke, truncation=1.5, model=df(scale=~Region.Label))
+abundance_estimate(minke_hn_region, ~Region.Label)</code></pre>
+<pre><code>## Summary statistics:
+##         Area  Effort CoveredArea n_observations n_samples         ER
+## North 630582 1358.38     4075.14             49        12 0.03607238
+## South  84734  484.41     1453.23             39        13 0.08051031
+## Total 715316 1842.79     5528.37             88        25 0.04775368
+## 
+## Abundance estimates:
+##        Estimate Variance        CV Model_Variance ER_Variance
+## North 10880.091 17904802 0.3889128      2103063.6    15801739
+## South  5236.584  1757683 0.2531758       371794.9     1385888
+## Total 16116.675 19662485 0.2751337      2474858.5    17187627</code></pre>
+</div>
+</div>
+<div id="point-transects" class="section level2">
+<h2>Point transects</h2>
+<p>Calculations for the abundance are the same for point transects as for lines, aside from the calculation of the covered area which of course is given by the area of the circular samplers not lines.</p>
+</div>
+<div id="overall-average-detectability-average-p" class="section level2">
+<h2>Overall average detectability (<code>Average p</code>)</h2>
+<p>An additional interesting statistic we might want to calculate is the overall average probability of detection (with the average being taken over all the observations). This can be done by noting that if the sum were simply over the numerator of the fraction, we’d have the number of individuals observed. We can then think of the estimate of <span class="math">$\hat{N}$</span> as this number divided by some “average” detection probability, we’ll refer to this as <span class="math">$\hat{P_a}$</span> and this is the quantity given in the <code>Average p</code> given in the <code>summary</code> output above (calculated as <span class="math">$\hat{P_a} = n/\hat{N}_\text{covered}$</span>). For detection functions without covariates this will just equal the average detectability.</p>
+</div>
+<div id="recap" class="section level2">
+<h2>Recap</h2>
+<p>This chapter has looked at how we calculate abundance once we’ve estimated our detection function. We’ve looked into how to calculate three useful summary statistics: the abundance in the study area or strata (<span class="math">$\hat{N}$</span>), the average detectability over the samples (<span class="math">$\hat{P_a}$</span>) and the abundance in the area covered in the survey (<span class="math">$\hat{N}_\text{covered}$</span>).</p>
+<p>Although these summary statistics seem like the end point of the analysis, of equal (if not greater) importance is the uncertainty around the estimates. Understanding the variability in the abundance we’ve calculated will enable us to feel confident (or not) in our results. This will be covered in the next chapter.</p>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<ul>
+<li><span class="citation">Thompson (2002)</span> is a thorough and accessible text on sampling theory, covering the theoretical basis of the Horvitz-Thompson estimator.</li>
+<li><span class="citation">Miller et al. (2013)</span> Appendix A analyses the Gulf of Mexico dolphin data using a spatially explicit model. This will be revisited in later chapters, but is referenced here for completeness.</li>
+<li><span class="citation">Borchers, Buckland and Zucchini (2002)</span> covers in more detail how to estimate abundance from many different survey types.</li>
+</ul>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Borchers, D.L., Buckland, S.T. and Zucchini, W. (2002) <em>Estimating Animal Abundance</em>. Springer.</p>
+<p>Branch, T.A. and Butterworth, D.S. (2001) Southern Hemisphere minke whales: standardised abundance estimates from the 1978/79 to 1997/98 IDCR-SOWER surveys. <em>Journal of Cetacean Research and Management</em>, <strong>3</strong>, 143–174.</p>
+<p>Hedley, S.L. and Buckland, S.T. (2004) Spatial models for line transect sampling., <strong>9</strong>, 181–199.</p>
+<p>Miller, D.L., Burt, M.L., Rexstad, E.A. and Thomas, L. (2013) Spatial models for distance sampling data: recent developments and future directions. <em>Methods in Ecology and Evolution</em>, <strong>4</strong>, 1001–1010.</p>
+<p>Thompson, S.K. (2002) <em>Sampling</em>, 2nd ed. Wiley.</p>
+<p>Williams, R., Kelly, N., Boebel, O., Friedlaender, A.S., Herr, H., Kock, K.H., et al. (2014) Counting whales in a challenging, changing environment. <em>Scientific Reports</em>, <strong>4</strong>, 1–6.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Here, as elsewhere, “average detectability” and “average probability of detection are used as synonyms. Though the latter is more precise, the former is much less unwieldy.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Note we could write this as <span class="math">$n/\hat{P_a}$</span>, but we leave the estimator in this form for comparison with the covariate case.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>The figure was adapted from <span class="citation">Hedley and Buckland (2004)</span>. The data and figure do not necessarily match up, but to give a rough representation of the simulated survey effort and observations.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>Eric’s analysis, showing how to perform a stratified analysis can be found on the Distance website at <a href="http://distancesampling.org/R/vignettes/minke.html"><a href="http://distancesampling.org/R/vignettes/minke.html" class="uri">http://distancesampling.org/R/vignettes/minke.html</a></a>.<a href="#fnref4">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- end google analytics -->
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+
+</body>
+</html>

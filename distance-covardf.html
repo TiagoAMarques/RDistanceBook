@@ -210,8 +210,11 @@ summary(hn.dolphins.size)</code></pre>
 ## (Intercept) 6.91408348 0.5091799
 ## size        0.03947174 0.0193140
 ## 
+## Kolmogorov-Smirnov p-value : 0.8957201 
+## Cramer-von Mises p-value   : 0.8579195 
+## 
 ##            Estimate        SE        CV
-## Average p 0.6601482 0.0824859 0.1249506</code></pre>
+## Average p 0.6601482 0.1228513 0.1860966</code></pre>
 <p>We can see that the summary now includes an additional row of parameters, giving the effect of the parameter for group size. One way to investigate the effect of adding the size covariate graphically by plotting the fitted model:</p>
 <pre class="r"><code>plot(hn.dolphins.size)</code></pre>
 <figure>
@@ -239,7 +242,7 @@ $$</span><br /> we can look at the values of <span class="math">$\hat{p_i}$</spa
 ## 0.2850027 0.6430390 0.9411026 0.9996894 1.0000000</code></pre>
 <p>in both preceding results we see there is a wide range of probabilities of detection. These differences will become important later in <a href="distance-abundance.html">Abdundance estimation</a>.</p>
 <p>We can look again at the question asked at the start of this chapter and ask how does group size affect probability of detection?</p>
-<pre class="r"><code>plot(mexdolphins$size, predict(hn.dolphins.size), xlab=&quot;Group size&quot;, ylab=&quot;Probability of detection&quot;)</code></pre>
+<pre class="r"><code>plot(mexdolphins$size[!is.na(mexdolphins$size)], predict(hn.dolphins.size), xlab=&quot;Group size&quot;, ylab=&quot;Probability of detection&quot;)</code></pre>
 <figure>
 <img src='distance-covardf_files/figure-html/hn-dolphins-detection-groupsize-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
 <figcaption>
@@ -255,21 +258,21 @@ summary(hn.dolphins.size.beaufort)</code></pre>
 ## Transect type          : line 
 ## Number of observations : 47 
 ## Distance range         : 0 - 8000 
-## AIC                    : 838.5305 
+## AIC                    : 838.0804 
 ## 
 ## Detection function     : Half-normal 
 ## 
 ## Detection function parameters
 ##                Estimate         SE
-## (Intercept)  6.44005486 1.41317559
-## size         0.04460134 0.03592287
-## beaufort2    0.88159885 3.18649434
-## beaufort3    0.59084169 0.93069828
-## beaufort4    0.63115668 2.08747918
-## beaufort5   -0.77217798 0.82851833
+## (Intercept)  7.22546807 0.84487444
+## size         0.03550552 0.01824181
+## beaufort    -0.07713286 0.21526846
 ## 
-##           Estimate        SE        CV
-## Average p 0.576381 0.1292324 0.2242135</code></pre>
+## Kolmogorov-Smirnov p-value : 0.9323762 
+## Cramer-von Mises p-value   : 0.8408719 
+## 
+##            Estimate        SE        CV
+## Average p 0.6578791 0.1212438 0.1842949</code></pre>
 <p>As Beaufort sea state is included as a factor covariate, which gives us a number of extra parameters in the model. We can see the effect of adding the covariate in a plot:</p>
 <pre class="r"><code>plot(hn.dolphins.size.beaufort)</code></pre>
 <figure>
@@ -294,20 +297,20 @@ summary(hn.dolphins.beaufort)</code></pre>
 ## Transect type          : line 
 ## Number of observations : 47 
 ## Distance range         : 0 - 8000 
-## AIC                    : 846.9741 
+## AIC                    : 845.5795 
 ## 
 ## Detection function     : Half-normal 
 ## 
 ## Detection function parameters
-##                Estimate        SE
-## (Intercept)  8.32762431 0.3422926
-## beaufort2    0.83603390 2.0471889
-## beaufort3    0.35247629 0.5493890
-## beaufort4   -0.23786783 0.4975554
-## beaufort5   -0.03977453 0.4730534
+##              Estimate       SE
+## (Intercept) 7.3023491 1.797247
+## beaufort    0.9271288 1.735011
 ## 
-##            Estimate         SE       CV
-## Average p 0.6781778 0.08790063 0.129613</code></pre>
+## Kolmogorov-Smirnov p-value : 0.2107792 
+## Cramer-von Mises p-value   : 0.1330294 
+## 
+##            Estimate        SE        CV
+## Average p 0.8389978 0.1636875 0.1950988</code></pre>
 <p>We can now build a table<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a> :</p>
 <table>
 <thead>
@@ -328,17 +331,17 @@ summary(hn.dolphins.beaufort)</code></pre>
 <td align="left">~size</td>
 <td align="right">2</td>
 <td align="right">0.6601482</td>
-<td align="right">0.1249506</td>
+<td align="right">0.1860966</td>
 <td align="right">836.0817</td>
 </tr>
 <tr class="even">
 <td align="left">4</td>
 <td align="left">Half-normal</td>
 <td align="left">~size + beaufort</td>
-<td align="right">6</td>
-<td align="right">0.5763810</td>
-<td align="right">0.2242135</td>
-<td align="right">838.5305</td>
+<td align="right">3</td>
+<td align="right">0.6578791</td>
+<td align="right">0.1842949</td>
+<td align="right">838.0804</td>
 </tr>
 <tr class="odd">
 <td align="left">1</td>
@@ -346,17 +349,17 @@ summary(hn.dolphins.beaufort)</code></pre>
 <td align="left">~1</td>
 <td align="right">1</td>
 <td align="right">0.7230935</td>
-<td align="right">0.1272423</td>
+<td align="right">0.1895098</td>
 <td align="right">842.3143</td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
 <td align="left">Half-normal</td>
 <td align="left">~beaufort</td>
-<td align="right">5</td>
-<td align="right">0.6781778</td>
-<td align="right">0.1296130</td>
-<td align="right">846.9741</td>
+<td align="right">2</td>
+<td align="right">0.8389978</td>
+<td align="right">0.1950988</td>
+<td align="right">845.5795</td>
 </tr>
 </tbody>
 </table>

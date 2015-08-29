@@ -153,7 +153,7 @@ img {
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="ap">
             <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
-            <li><a href="appendix-.html">Getting your data into shape</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
             <li><a href="appendix-.html">Projections etc</a></li>
                            <li class="divider"></li>
             <li><a href="acknowledgements.html">Acknowledgements</a></li>
@@ -214,7 +214,7 @@ Figure 2: Detection function models fitted to the Mexico dolphin data, left to r
 <p>For the half-normal with Hermite polynomial detection function, the adjustment didn’t appear to have any effect on the shape of the detection function. We can investigate the estimated parameters of the model and see that parameter that controls the influence of the Hermite adjustment is very very small:</p>
 <pre class="r"><code>dolphins.hn_hermite$par</code></pre>
 <pre><code>##   (Intercept)    hermite(2) 
-##  8.579715e+00 -1.410377e-06</code></pre>
+##  8.579719e+00 -2.866084e-06</code></pre>
 <p>It therefore seems reasonable to rule out this model as we are estimating an extra parameter for no gain. The half-normal with cosine model (second panel) seems like a much better candidate.</p>
 </div>
 <div id="hazard-rate-ka-models" class="section level4">
@@ -332,8 +332,11 @@ summary(dolphins.hn_cos_nomono)</code></pre>
 ## (Intercept) 8.5842206 0.2327356
 ## cos(2)      0.3699387 0.1962412
 ## 
-##            Estimate         SE        CV
-## Average p 0.5240601 0.09890007 0.1887189</code></pre>
+## Kolmogorov-Smirnov p-value : 0.6798172 
+## Cramer-von Mises p-value   : 0.7620765 
+## 
+##            Estimate       SE        CV
+## Average p 0.5240601 0.147298 0.2810708</code></pre>
 <p>Comparing this summary to the previous one above (when montonicity is enforced), we can see that there is a difference in the coefficient estimated for the cosine part of the model. We can also look a plot of the model, to make the problem more obvious.</p>
 <pre class="r"><code>plot(dolphins.hn_cos_nomono)</code></pre>
 <figure>
@@ -407,12 +410,12 @@ Figure 11: Mixture model detection function with 2 components fitted to the Hawa
 <p>Ignoring goodness of fit for now, we can use the <code>summarize_models</code> function in <code>Distance2</code> to create a table of model results (sorted by AIC) for easy comparison. For example, for the models of dolphins we can produce the results table by simply giving the function the models we wish to consider as arguments.</p>
 <pre class="r"><code>summarize_models(dolphins.hn_cos, dolphins.hn_hermite, dolphins.hr_cos, dolphins.hr_poly, dolphins.fourier1, dolphins.fourier12)</code></pre>
 <pre><code>##                         Model Formula # pars       P_a   CV(P_a)      AIC
-## 1     Half-normal + cosine(2)      ~1      2 0.5498216 0.2012560 841.4398
-## 5         Uniform + cosine(1)      ~1      1 0.6996426 0.1268387 841.8044
-## 6       Uniform + cosine(1,2)      ~1      2 0.6262928 0.1859543 842.6838
-## 3     Hazard-rate + cosine(2)      ~1      3 0.5492301 0.2000632 843.2615
-## 4 Hazard-rate + polynomial(2)      ~1      3 0.5756016 0.4327412 844.1968
-## 2    Half-normal + Hermite(2)      ~1      2 0.7230939 0.1842490 844.3143</code></pre>
+## 1     Half-normal + cosine(2)      ~1      2 0.5498216 0.2997429 841.4398
+## 5         Uniform + cosine(1)      ~1      1 0.6996426 0.1889087 841.8044
+## 6       Uniform + cosine(1,2)      ~1      2 0.6263006 0.2769566 842.6838
+## 3     Hazard-rate + cosine(2)      ~1      3 0.5492290 0.2979662 843.2615
+## 4 Hazard-rate + polynomial(2)      ~1      3 0.5759385 0.6443184 844.1967
+## 2    Half-normal + Hermite(2)      ~1      2 0.7230932 0.2744102 844.3143</code></pre>
 <p>Note that the numbering of rows corresponds to the order in which the models were passed to <code>summarize_models</code>. Columns are as follows:</p>
 <ul>
 <li><code>Model</code> gives a short description of fitted model (this may be ambiguous so the row numbers may be helpful in working out which model is which).</li>
@@ -425,8 +428,8 @@ Figure 11: Mixture model detection function with 2 components fitted to the Hawa
 <p>We can do the same thing for the detection functions fitted to the amakihi data too:</p>
 <pre class="r"><code>summarize_models(amakihi.hn_mix1, amakihi.hn_mix2, amakihi.hn_mix2_obs)</code></pre>
 <pre><code>##                         Model Formula # pars       P_a    CV(P_a)      AIC
-## 3 2-point half-normal mixture    ~obs      5 0.2788672 0.05789068 10778.69
-## 2 2-point half-normal mixture      ~1      3 0.2834978 0.06203804 10805.48
+## 3 2-point half-normal mixture    ~obs      5 0.2788664 0.05789090 10778.69
+## 2 2-point half-normal mixture      ~1      3 0.2834901 0.06204498 10805.48
 ## 1                 Half-normal      ~1      1 0.3514386 0.03208017 10833.84</code></pre>
 <p>The <code>Formula</code> column now includes <code>~obs</code> for the model fitted with observer as a covariate.</p>
 <p>These tables can provide a useful summary when many models have been fitted, but don’t excuse the investigator from performing model checking and plotting as described previously. They are a convenient utility not a fast track to completing an analysis.</p>
