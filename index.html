@@ -10,14 +10,18 @@
 
 
 
+
 <title>Practical distance sampling in R</title>
 
-<script src="libs/jquery-1.11.0/jquery.min.js"></script>
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="libs/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
-<script src="libs/bootstrap-3.3.1/js/bootstrap.min.js"></script>
-<script src="libs/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
-<script src="libs/bootstrap-3.3.1/shim/respond.min.js"></script>
+<link href="libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">
 
@@ -71,10 +75,6 @@ figure{
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="libs/highlight/textmate.css"
-      type="text/css" />
-<script src="libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -88,6 +88,34 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 }
 </script>
 
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
 
 
 </head>
@@ -104,12 +132,34 @@ code {
   color: inherit;
   background-color: rgba(0, 0, 0, 0.04);
 }
-img { 
-  max-width:100%; 
-  height: auto; 
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
 }
 </style>
+
+
+
 <div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
 
 
 <div class="navbar navbar-default navbar-fixed-top">
@@ -138,8 +188,8 @@ img {
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
           <ul class="dropdown-menu" aria-labelledby="sp">
-            <li><a href="dsm-.html">Why build spatial models?</a></li>
-            <li><a href="dsm-.html">Survey set up</a></li>
+            <li><a href="dsm-why.html">Why build spatial models?</a></li>
+            <li><a href="dsm-surveysetup.html">Survey data set up</a></li>
             <li><a href="dsm-.html">Model formulation</a></li>
             <li><a href="dsm-.html">Crash course in GAMs</a></li>
             <li><a href="dsm-.html">Adding covariates</a></li>
@@ -173,15 +223,19 @@ img {
   </div>
 </div>
 
-<div id="header">
-<h1 class="title">Practical distance sampling in R</h1>
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Practical distance sampling in R</h1>
+
 </div>
 
 
 <p>Welcome to the <em>Practical distance sampling in R</em> “book” webpage. You can use the drop-down menus above to read the book, if you don’t know what that might entail, read on…</p>
 <div id="a-book-about-distance-sampling" class="section level2">
 <h2>A book about distance sampling…</h2>
-<p>During 2014-2015, I (<a href="http://converged.yt">Dave Miller</a>) am writing a book about how to use R to estimate animal abundance, in particular using distance sampling methods. An outline…</p>
+<p>During 2014-2017, I (<a href="http://converged.yt">Dave Miller</a>) am writing a book about how to use R to estimate animal abundance, in particular using distance sampling methods. An outline…</p>
 <p><strong>Aim</strong>: the book will explain how to build models of distance sampling data using packages available for the programming language R. It will be assumed that readers have already conducted field work and have data to analyse.</p>
 <p><strong>Audience</strong>: ecology/biology masters and PhD students, field researchers, environmental consultants, wildlife/natural resources scientists.</p>
 <p><strong>Audience background</strong>: “quantitatively minded” but not statisticians by training, (e.g. you should be comfortable with fitting and explaining results of a GLM in R). It’ll be assumed that those reading will be familiar with R (i.e. know what <code>data.frame</code>s are, how to build them, general “data-mudging”, though not consider themselves “programmers”; if you’re new to R I recommend <a href="http://rforcats.net/">R for cats</a> as a primer).</p>
@@ -199,7 +253,7 @@ img {
 <li>Spatial models for distance sampling data
 <ul>
 <li><em>Why build spatial models?</em>: Why use a DSM rather than just Horvitz-Thompson? What are the benefits/costs?</li>
-<li><em>Survey set up</em>: what does a DSM survey look like? Data setup.</li>
+<li><em>Survey data setup</em>: what does a DSM survey look like? Data setup.</li>
 <li><em>Model formulation</em>: what do we require from the model, 2-stage modelling, why GAMs? What does the response mean?</li>
 <li><em>Crash course in GAMs</em>: What are GAMs? Wigglyness, penalties, “this is just a GLM”</li>
 <li><em>Adding covariates</em>: static vs. dynamic variables, how does this dichotomy change the response. Term selection, how do we know a term is “useful”? How do we interpret smooth terms? When should we use random effects?</li>
@@ -225,10 +279,10 @@ img {
 <p>I’m writing the book “in the open” in the hope that those interested will contribute suggestions as I’m going. All content will be available on this website, as well as the files used to generate the figures and models referenced in the book.</p>
 <p>A <code>git</code> repository containing the text of the book <a href="http://github.com/dill/RDistanceBook">can be found on github</a>. You can use github’s <a href="https://github.com/dill/RDistanceBook/issues">Issues</a> to submit suggestions, or (if you’re more <code>git</code> savvy) you can <a href="https://help.github.com/articles/using-pull-requests/">submit pull requests</a> to alter the content.</p>
 </div>
-<div id="a-book-without-a-publisher" class="section level2">
-<h2>A book without a publisher…</h2>
-<p>If you’re a publisher and you’d like to print a dead tree version of these pages, I’d be very interested in talking to you.</p>
-<p>If you are interested in obtaining a dead tree copy of these pages, then please let me know by <a href="https://docs.google.com/forms/d/1z5bFFd_GpUXeVzbr5wuwoUKT5wvhNizrGpEOiCZik58/viewform">filling in this Google Form</a>; having evidence of demand will make it more likely that paper copy will exist. If you fill in the form, I’ll e-mail you if a paper copy becomes (or is likely to become) available but won’t use your address for any other reason.</p>
+<div id="a-book-with-a-publisher" class="section level2">
+<h2>A book with a publisher!</h2>
+<p>As of 2017, I am happy to announce the book will published by <a href="https://pelagicpublishing.com/">Pelagic</a> sometime in 2018 as part of their “Data in the Wild” series.</p>
+<p>If you are interested in obtaining a dead tree copy of these pages, then please let me know by <a href="https://docs.google.com/forms/d/1z5bFFd_GpUXeVzbr5wuwoUKT5wvhNizrGpEOiCZik58/viewform">filling in this Google Form</a>. I’ll e-mail you with updates as a paper copy becomes available but won’t use your address for any other reason.</p>
 </div>
 
 
@@ -288,14 +342,20 @@ $(document).ready(function () {
 </script>
 <!-- end google analytics -->
 
+
+
 </div>
 
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
+
 
 </script>
 
