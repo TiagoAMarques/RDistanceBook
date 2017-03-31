@@ -374,7 +374,7 @@ simple_dsm &lt;- dsm(formula=count~s(y), family=tw(), ddf.obj=dolphin_df,
 <figure>
 <img src='dsm-gamcrash_files/figure-html/plotsmooth-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
 <figcaption>
-Figure 1: Plot of the smooth of Northing on the Guld of Mexico dolphins for a model with the default basis size (10, left) and a basis size of 20 (right).
+Figure 1: Plot of the smooth of Northing on the Gulf of Mexico dolphins for a model with the default basis size (10, left) and a basis size of 20 (right).
 </figcaption>
 </figure>
 <p>In Figure XXX, dashed lines indicate +/- 2 standard errors from the fitted smooth in solid line, the lines at on the horizontal axis are a rug plot indicating the locations of the observed data. The label on the vertical axis tells us that the model term’s name and gives an indication of how complex the function is (more on this in a moment). Importantly, the plot is on the link scale, so we could exponentiate it to get a plot on the response scale here, but generally we look at these plots on the link scale<a href="#fn10" class="footnoteRef" id="fnref10"><sup>10</sup></a>.</p>
@@ -502,7 +502,7 @@ plot(xy_dsm, shade=TRUE)</code></pre>
 <figure>
 <img src='dsm-gamcrash_files/figure-html/plotsmooth_xy-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
 <figcaption>
-Figure 8: Plot of the smooths of Northing and Easting on the Guld of Mexico dolphins. Note that setting <code>shade=TRUE</code> means our +/- 2 standard error band is shaded gray rather than delimited with dotted lines, this can be easier to see on plots with many elements.
+Figure 2: Plot of the smooths of Northing and Easting on the Gulf of Mexico dolphins. Note that setting <code>shade=TRUE</code> means our +/- 2 standard error band is shaded gray rather than delimited with dotted lines, this can be easier to see on plots with many elements.
 </figcaption>
 </figure>
 <p>The model <code>xy_dsm</code> treats the effects of Northing and Easting as additive, but this ignores their joint effect (the model only addresses their marginal effects). We can include bivariate terms terms in our model instead. How we do this depends on the exact form of the basis functions we use, but for the default basis in <code>mgcv</code> (and hence <code>dsm</code>, thin plate regression splines), we can simply add another variable to our <code>s</code> term and again look at the summary:</p>
@@ -536,7 +536,7 @@ points(xy_bi_dsm$data[, c(&quot;x&quot;,&quot;y&quot;)][xy_bi_dsm$data$count&gt;
 <figure>
 <img src='dsm-gamcrash_files/figure-html/plotsmooth-bi-xy-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
 <figcaption>
-Figure 9: Plot of the bivariate smooth of Northing and Easting on the Guld of Mexico dolphins. Heatmap colours indicate that red is lower values, white higher. Dots indicate observation locations (segments) and circles the location of non-zero counts. Again this plot is on the linear predictor (logarithmic) scale.
+Figure 3: Plot of the bivariate smooth of Northing and Easting on the Gulf of Mexico dolphins. Heatmap colours indicate that red is lower values, white higher. Dots indicate observation locations (segments) and circles the location of non-zero counts. Again this plot is on the linear predictor (logarithmic) scale.
 </figcaption>
 </figure>
 <p>This model doesn’t seem too satisfying, but we’ll look into that more in the next chapter. For now let us be content with the increase in deviance explained and <span class="math"><em>R</em><sup>2</sup></span>.</p>
