@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>A crash course in generalized additive models</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-why.html">Why build spatial models?</a></li>
+            <li><a href="dsm-surveysetup.html">Survey data set up</a></li>
+            <li><a href="dsm-formulation.html">Model formulation</a></li>
+            <li><a href="dsm-gamcrash.html">Crash course in GAMs</a></li>
+            <!--<li><a href="dsm-.html">Fitting density surface models</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>-->
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">A crash course in generalized additive models</h1>
+
+</div>
+
+
+<p>In this chapter we’ll take a tour through the world of generalized additive models (GAMs) and see how these flexible models work in practice. Note that although this chapter gives a broad overview of GAMs, it does not cover anything close to “everything” one needs to know. I highly recommend CITE WOOD 2017 both as a starting point and a useful reference for more complex modelling techniques. That book alone is a few hundred pages, what I can condense into a chapter here is the bare bones in comparison.</p>
+<p>With that in mind, here we’ll look into some of the mathematics behind generalized additive models while keeping an eye on the practical implications that these technical details have on modelling biological populations.</p>
+<div id="what-is-a-gam" class="section level2">
+<h2>What is a GAM?</h2>
+<p>Chances are, you’ve heard of the term “GAM” before. You might have seen it in a paper or had it suggested as an approach to an analysis. In common parlance, we often use the term “GAM” to mean “GLM with extra wiggly bits in it”, or <em>smoothing</em>. In this chapter we’ll take this definition and not explore too far outside it. However, it’s important to note that GAMs really encapsulate a large class of models and can include much more than just smoothing.</p>
+<p>As a quick example of smoothing and to give an idea of the kinds of models we’ll fit, let’s see a simple example of fitting a smoother to some data. We can generate some sample data (left panel of Figure XXXX) using the <code>gamSim</code> function in the <code>mgcv</code> package, then use <code>gam</code> to fit a model to that data.</p>
+<pre class="r"><code>library(mgcv)
+# simulate some data... (don&#39;t worry about understanding this right now)
+set.seed(2)
+dat &lt;- gamSim(1, n=100, dist=&quot;normal&quot;, verbose=FALSE)
+dat$y &lt;- dat$f2 + rnorm(nrow(dat), sd=1)
+
+# fit a model
+b &lt;- gam(y~s(x2), data=dat)</code></pre>
+<p>The syntax for fitting the model is very similar to that of the GLM, we just wrapped an <code>s()</code> around our covariate <code>x2</code>. A plot of our model is shown in the right side of Figure XXXX. There’s a lot more going on inside this call to <code>gam()</code> than that, and we’ll explore this below.</p>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/zeroth-dsm-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: An example of smoothing some data. Left shows the generating function and the data generated from it (function values plus some normal error). Right shows the fitted smooth (black line) with uncertainty (gray band) with the same data as points.
+</figcaption>
+</figure>
+<p>We’ll start thinking about GAMs<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> by dissecting the term “generalized additive model”:</p>
+<ul>
+<li>Generalized: is in the same sense as “generalized linear model”, it means that we can use many response distributions to model the data (we are not just restricted the normal distribution).</li>
+<li>Additive: the terms in our model add together.</li>
+<li>Models: of course, we have a model.</li>
+</ul>
+<div id="response-distributions" class="section level3">
+<h3>Response distributions</h3>
+<p>One of the things that was swept under the carpet in our simple example above is the assumption we made about the response distribution of the data. Let’s begin by thinking about the response, this gets to the heart of what a GAM (and, indeed GLMs and other models) are trying to do. What we’re really talking about is modelling the mean (or <em>expected value</em>) of the data. The “fancy” bits of our model (the smooths, random effects, etc) help us explain the variation in the mean.</p>
+<p>What do we mean by “should be modelled using a count distribution”? We want to say that given particular covariate values, we will expect a particular value of the distribution on average. We model the relationship between the counts and the covariates using the smooths (or other additive terms), which we’ll get to in the next section.</p>
+<p>As we talked about in the previous chapter, the response for a DSM is a count or estimated abundance in a given segment. I’ll use the term “count” here very generally for the rest of this section, but I mean both count and estimated abundance. Counts should be modelled using a “count distribution”: a distribution that can handle non-negative numbers (though they don’t necessarily need to be whole numbers). The classic count distribution you’ve probably heard of before is Poisson, but for the kind of data we collect from distance sampling surveys, we’ll require flexible distributions. Figure XXXX shows a histogram of the counts per segment for the Gulf of Mexico dolphin data. We can observe some important (and common) features of the data:</p>
+<ul>
+<li><em>Counts are mostly zero</em>. Though this can differ based on the species, observers and land/seascape, one should expect that many of the segments to have zero counts.</li>
+<li><em>Overdispersion</em>: For our canonical count distribution, the Poisson, we assume that the mean and variance are equal (this is usually a quite restrictive assumption). This is clearly not the case if we have many zero counts and then a series of non-zero (perhaps large) counts. To model data where the variance is greater than the mean (“overdispersed”), we require flexible mean-variance relationships — the three distributions we look at below have this property.</li>
+</ul>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/countshist-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 2: Frequency of per-segment counts for the Gulf of Mexico dolphin data. Note the spike at zero (though the bin is goes from 0 to 10, there are only zeros here).
+</figcaption>
+</figure>
+<p>Generally speaking, the response is a count but is not not always integer. This can be because we used the estimated abundance as the response (which doesn’t guarantee that the response will be whole numbers of animals) but can also be because we averaged group sizes from multiple observations (multi-observer cetacean cruises often average group sizes recorded by different observers to obtain a more robust estimate). Our response should take this into account (this means that the Poisson distribution cannot be used, as it will only accept integer values).</p>
+<p>We’re going to focus on using three response distributions here, they are the: quasi-Poisson, Tweedie and the negative binomial distribution<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>.</p>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/tweedie-nb-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 3: Tweedie and negative binomial distribution densities over a range of counts. Different colours indicate different power parameters (Tweedie) or scale parameters (negative binomial). Both distributions are able to model spikes at zero.
+</figcaption>
+</figure>
+<div id="quasi-poisson" class="section level4">
+<h4>Quasi-Poisson</h4>
+<p>The quasi-Poisson “distribution” is not really a distribution but is a quick way of fitting data that have particular mean-variance relationships<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>. Specifically, the quasi-Poisson assumes only that <span class="math">Var(count) = <em>ϕ</em>𝔼(count)</span> where <span class="math"><em>ϕ</em></span> is referred to as a <em>dispersion parameter</em> that scales the mean appropriately so that the variance is large enough. One can think of quasi-Poisson a more flexible version of the Poisson distribution, but still only allows for linear scaling between mean and variance.</p>
+<p>The quasi-Poisson distribution’s quasi nature is a bit of a drawback in practice. As quasi distributions don’t have probability density functions (CITE XXXX), it’s rather difficult to do some of the model checking that we’d really like to do for these models (see the following chapters for more on this). On the other hand quasi-Poisson models are usually quick to put together and can be a good first step to building a model.</p>
+</div>
+<div id="tweedie" class="section level4">
+<h4>Tweedie</h4>
+<p>The Tweedie distribution <span class="citation">(Tweedie, 1984; Candy, 2004; Shono, 2008)</span> is not a single distribution at all, but rather a family of distributions that one can obtain by setting a specific parameter (the <em>power parameter</em>). Tweedie incorporates Poisson, Gamma and Normal distributions and things between.</p>
+<p>Tweedie distributions are often referred to in the statistical literature as “gamma mixtures of Poisson random variables”, which may seem a little opaque. Intuitively we can think of our survey (ship or person or plane) travelling to a given segment, at this segment, we either see something or we don’t (gamma distributed) and if we do see something, we see a given count (Poisson distributed).</p>
+<p>The power parameter, <span class="math"><em>q</em></span>, dictates which distribution we get and also tells us what the mean-variance relationship will be. The mean-variance relationship is given by: <span class="math">Var(count) = <em>ϕ</em>𝔼(count)<sup><em>q</em></sup></span>, where <span class="math"><em>ϕ</em></span> is a scale parameter (similar to the quasi-Poisson above). Setting <span class="math"><em>q</em> = 1</span> gives a Poisson distribution, <span class="math"><em>q</em> = 2</span> gives a gamma distribution and <span class="math"><em>q</em> = 3</span> gives a normal distribution. Once <span class="math"><em>q</em></span> gets below <span class="math">1.2</span>, we see some odd behaviour from the distribution (we get a multimodal distribution, which seems unrealistic for our count data). We are only interested in distributions between <span class="math">1.2 &lt; <em>q</em> &lt; 2</span> and really there is not much difference in the distributions if we vary <span class="math"><em>q</em></span> at below the first decimal place (so we really only need to think about <span class="math"><em>q</em> = 1.2, 1.3, …, 1.9</span>, as shown in Figure XXXX). Luckily, we can estimate <span class="math"><em>q</em></span> during the fitting of our model<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>.</p>
+</div>
+<div id="negative-binomial" class="section level4">
+<h4>Negative binomial</h4>
+<p>The negative binomial distribution assumes a different mean-variance relationship to the Tweedie and quasi-Poisson: <span class="math">Var(count) = </span> <span class="math">𝔼(count) + <em>κ</em>𝔼(count)<sup>2</sup></span> where we estimate <span class="math"><em>κ</em></span>. The negative binomial therefore assumes a quadratic relationship between the mean and variance, which may be a rather strong assumption to make (though you might argue that the linear assumption of quasi-Poisson is also strong). <span class="citation">Ver Hoef and Boveng (2007)</span> note that the negative binomial also tends to up-weight observations with small (compared to the mean) counts relative to what the quasi-Poisson would; this property seems to be useful when fitting models where there are many large groups (for example seabirds and dolphins) and we’ll look into this in more detail in the following chapters. As with the Tweedie we estimate <span class="math"><em>κ</em></span> during fitting our model.</p>
+</div>
+</div>
+<div id="additive-terms" class="section level3">
+<h3>Additive terms</h3>
+<p>Let’s start by thinking about the good old statistical workhorse, the linear model. Figure XXXX shows a plots of two models fitted to the same data; the left panel shows a linear fit through the data (<code>y~x</code>) which seems to struggle a bit, the right shows a better model with an additional term: the explanatory variable squared (<code>y~x+poly(x, 2)</code>). The true function that generates this data is <span class="math">exp(2<em>x</em>)</span>. The model with the squared term in it is a better fit, as it has some curvature (though we’re cheating here as we know about the data generation process).</p>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/islinear-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Predictions from fits to data generated from the function <span class="math">exp(2<em>x</em>)</span> (with additional noise). Left: a linear regression, right: linear with an additional quadratic term.
+</figcaption>
+</figure>
+<p>This “trick” of adding polynomial terms seems to work here, and could be extended to higher order terms (cubic, quartic, etc polynomials), but is it sustainable? Could we fit something close to the model in Figure XXXX(first fig)? In short: no. There are a number of issues with this kind of approach. First, it feels somewhat <em>ad hoc</em> to add terms like this, the choice of which terms to add is arbitrary and although it’s easy for simple examples, knowing which order terms to choose for more complex relationships is down to the expertise and imagination of the modeller. Second, the polynomials are defined over the whole of the range of the covariate, one can’t (easily) restrict their effect to a subset of the range. So if the line we need to fit looks like pieces of different functions, fitting a model with simple polynomials won’t work. Third, even if we want the extra terms to effect the whole range of the covariate, these (simple) polynomials are not terribly efficient at doing this — they lack the mathematical property of <em>orthogonality</em> and tend to “overlap” in their effects, so each additional term doesn’t add much new<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>. Fourth, there is no control over how additional polynomials should effect the model fit, the model will tend to overfit, making the model less general and useful. With these points in mind, wouldn’t it be nice to think about adding wiggles to our models through a framework rather than <em>ad hoc</em> additions?</p>
+<p>What if we could introduce flexible wiggles into our models, built using simple (mostly) locally-acting functions that add together to create complicated effects? Enter those <span class="math"><em>s</em></span> terms we saw above, which we’ll refer to here as <em>smooths</em> or <em>splines</em> (more correctly). Splines are based on a simple idea: you can build complicated functions from lots of simple functions and apply this to making wiggles in your models. What is <span class="math"><em>s</em>(<em>x</em>)</span> made of then? <br /><span class="math">$$
+s(x) = \sum_{k=1}^K \beta_k b_k(x),
+$$</span><br /> where we estimate <span class="math"><em>K</em></span> parameters, <span class="math">{<em>β</em><sub><em>k</em></sub>; <em>k</em> = 1, …, <em>K</em>}</span>, which multiply the <em>basis functions</em> <span class="math"><em>b</em><sub><em>k</em></sub></span> of the covariate <span class="math"><em>x</em></span>. We’ll ignore the exact form of the basis functions for now, but bear in mind that there are many options when it comes to which basis to use, and they can be tailored to the specific modelling task. For now let’s also simplify and only think about the case where <span class="math"><em>s</em></span> is a function of one covariate, but later we’ll see more complex formulations for <span class="math"><em>s</em></span>. Figure XXXX shows some basis functions (dashed) and how they can add (when scaled by appropriate <span class="math"><em>β</em><sub><em>k</em></sub></span>s) to create another function (solid line).</p>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/basis-ex-1.png' width='480'height=''width.px='480'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Eight basis functions (grey, dashed lines) used to build the smooth depicted by the solid line.
+</figcaption>
+</figure>
+<p>When thinking about linear models, we generally talk about the <em>design matrix</em> for our model, and call it <span class="math"><strong>X</strong></span>. Each row of <span class="math"><strong>X</strong></span> corresponds to a sample in our data (in our DSM case, a segment) and each column relates to a covariate we will multiply by the coefficients we’ll estimate when fitting the model (<span class="math">$\boldsymbol{\beta}$</span>). When we add polynomials or splines to the model, we just augment the design matrix with extra columns. Each column is the evaluation of the appropriate basis function (or polynomial).</p>
+<p>If we have a model with a smooth of <span class="math"><em>x</em></span>, a linear <span class="math"><em>x</em></span> term and an intercept (<span class="math"><em>β</em><sub>0</sub> + <em>β</em><sub><em>x</em></sub><em>x</em> + <em>s</em>(<em>x</em>)</span> mathematically, <code>~x+s(x)</code> in R), we have the following design matrix (for <span class="math"><em>n</em></span> samples): <br /><span class="math">$$
+\mathbf{X} = \pmatrix{1 &amp; x_1 &amp; b_1(x_1) &amp; b_2(x_1) &amp; \ldots &amp; b_K(x_1)\\
+             1 &amp; x_2 &amp; b_1(x_2) &amp; b_2(x_2) &amp; \ldots &amp; b_K(x_2)\\
+             \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots\\
+             1 &amp; x_n &amp; b_1(x_n) &amp; b_2(x_n) &amp; \ldots &amp; b_K(x_n)\\
+}.
+$$</span><br /> So we can write the <em>linear predictor</em> of our model as <span class="math">$\mathbf{\mu} = \mathbf{X}\boldsymbol{\beta}$</span> (if we put all our <span class="math"><em>β</em></span>s together in a vector <span class="math">$\boldsymbol{\beta}$</span>). Note that <span class="math">$\mathbf{X}\boldsymbol{\beta}$</span> is on the link function scale, and we need to apply the inverse link to get on the scale of the observations (usually we use <span class="math">log</span> links with the above distributions).</p>
+</div>
+<div id="how-do-we-estimate-smooths" class="section level3">
+<h3>How do we estimate smooths?</h3>
+<p>Now we know we can build complicated functions from lots of little simple ones, how can we make it fit well? The danger with having something that <em>can</em> fit a complex function is that it might well <em>always</em> do that, which we don’t want. Generally in fitting a statistical model, we want to maximise a likelihood (or something like a likelihood, at least<a href="#fn6" class="footnoteRef" id="fnref6"><sup>6</sup></a>) and find a set of parameters such that our model is a good approximation of the process that generated our data. Consider the fits shown in Figure XXXX: data is generated from the blue line with some (normal) errors. Looking at the left plot (and ignoring the others for now), we see that our model (the black line) in an effort to make our model as like the data as possible, has attempted to join the dots. Although an admirable try, this is not the behaviour we seek — we would like our models to tell us something general about the data, not precisely reproduce what we saw (we can look at the raw data for that!). Getting very close to the data is especially problematic when we know there is some randomness in the response (which we think there always are). Using likelihood maximisation alone to guide us would lead us to this kind of model, which would not be helpful.</p>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/wiggles-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Smoothers fitted to data (dots) generated from the blue line (plus some noise). Left plot shows what happens when the GAM has its smoothing parameter set to zero and the model has no penalty and can try to “join the dots”. The middle plot shows when the penalty dominates the fit and a linear model fit is produced. The right plot shows the correct smoothing parameter has been selected and a parsimonious fit has been found.
+</figcaption>
+</figure>
+<p>We’d prefer a model like the one on the right of Figure XXXX, but how can we achieve this? We need to <em>penalize</em> our fit to stop our model from being too wiggly. But what should we use for this penalty? Well, the answer comes from thinking about wiggles. We can stop our model from overfitting by supressing the number of wiggles it can have. Effectively we are saying to the model: “get as close to the data as possible, but only be <em>this</em> wiggly”. Before we start thinking about how wiggly “this” should be, we first need to think about how we measure wigglyness.</p>
+<p>Mathematically, we can think of wigglyness in terms of the derivatives of a function, as they measure change in the function. In one dimension, the second derivatives of the function tell us about the wiggles (if we think of wiggles as “changes in direction of the function”). Figure XXXX shows a function and its first and second derivatives. Since our function is continuous, we can find its first and second derivatives at any point. Knowing the second derivative at a given point is useful, but we really need a single number that tells us how wiggly the function is. That’s where calculus comes in useful again, we can integrate the square of the second derivative to get a single number. Large values of this integral correspond to very wiggly functions, small values will correspond to very flat functions (which we also might call “very smooth” functions). Mathematically we can write such a penalty as<a href="#fn7" class="footnoteRef" id="fnref7"><sup>7</sup></a> <br /><span class="math">$$
+\int_A \left(\frac{\partial^2 s(x)}{\partial x^2}\right)^2 \text{d}x,
+$$</span><br /> where again <span class="math"><em>s</em>(<em>x</em>)</span> is our smooth, from which we’ve calculated second derivatives. We then square the derivative and integrate over the domain <span class="math"><em>A</em></span> (which depends on the exact formulation of <span class="math"><em>s</em>(<em>x</em>)</span>, it could be the range of the data or the whole real line). Now a useful property of our basis decomposition of the smooth comes into play. Since we can write <span class="math"><em>s</em>(<em>x</em>)</span> as a sum and the <span class="math"><em>β</em><sub><em>k</em></sub></span>s don’t involve <span class="math"><em>x</em></span> at all, we can rewrite our penalty as<a href="#fn8" class="footnoteRef" id="fnref8"><sup>8</sup></a></p>
+<p><br /><span class="math">$$
+\boldsymbol{\beta}^\text{T} S \boldsymbol{\beta},
+$$</span><br /> where the <span class="math"><em>i</em><em>j</em><sup>th</sup></span> element of the <em>penalty matrix</em>, <span class="math"><em>S</em></span>, is: <br /><span class="math">$$
+S_{ij} = \int_A \left(\frac{\partial^2 b_i(x)}{\partial x^2} \frac{\partial^2 b_j(x)}{\partial x^2}\right)^2 \text{d}x.
+$$</span><br /> This quadratic form for the penalty turns out to be very useful. The integrals and the model parameters are seperable, so we only need compute <span class="math"><em>S</em></span> once, at the start of our model fitting and once it’s computed we only need to matrix multiplications to calculate the penalty for different parameter values.</p>
+<div class="figure">
+<img src="wiggly.gif" alt="Animation of derivatives (one frame of this animation will appear in the paper copy of the book) (This caption needs improving)." />
+<p class="caption">Animation of derivatives (one frame of this animation will appear in the paper copy of the book) (This caption needs improving).</p>
+</div>
+<p>So far we have a measure of how close the model is to the data (something like a likelihood) and the penalty (a function of the model parameters that measures the wigglyness of the model). But how to we control how much influence the penalty has once we add those things together? We can add another parameter to the model (one per smooth term) and estimate that while we’re estimating the <span class="math"><em>β</em><sub><em>k</em></sub></span>s. The <em>smoothing parameter</em> (often denoted <span class="math"><em>λ</em></span>) dictates the influence of the penalty. Setting the smoothing parameter to be zero means the penalty has no influence and the model is free to overfit (back to the left panel in Figure XXXX). If the smoothing parameter is set large (say, <span class="math">∞</span>), the penalty will have a very big effect and we’ll remove all the wiggles from the model. Depending on the basis we use, the resulting model might be a constant line or some line with a slope (or something else), this is because what is left are the parts of <span class="math"><em>s</em>(<em>x</em>)</span> that aren’t effected by the penalty: the parts without second derivatives (middle plot of Figure XXXX).</p>
+<p>In order to fit these models we don’t set the smoothing parameter(s), we estimate them. Luckily there is a fairly large literature on which methods work well (both in practice and theoretically). Generally, REstricted Maximum Likelihood (REML) gives good results in the kind of models we’ll fit here. We’ll cover REML in more detail in later chapters.</p>
+</div>
+</div>
+<div id="lets-try-that-out" class="section level2">
+<h2>Let’s try that out</h2>
+<p>Before we go further, let’s try out fitting a very simple model using the <code>dsm</code> package and see how the concepts we’ve looked at above translate into code. First let’s write down a simple model: <br /><span class="math">$$
+n_j = a_j\hat{p}_j \exp\left[ \beta_0 + s(\texttt{y}) \right] + \epsilon_j
+$$</span><br /> where <span class="math"><em>ϵ</em><sub><em>j</em></sub> ∼ <em>N</em>(0, <em>σ</em><sup>2</sup>)</span>, <span class="math"> <em>n</em><sub><em>j</em></sub> ∼ Tweedie</span>.</p>
+<p>This model specifies that the count in segment <span class="math"><em>j</em></span> is a function of <span class="math"><code>y</code></span> (Northing) and an intercept (<span class="math"><em>β</em><sub>0</sub></span>). After applying the (inverse) link function<a href="#fn9" class="footnoteRef" id="fnref9"><sup>9</sup></a> (<span class="math">exp</span>), we scale the model by the effective area <span class="math">$a_j\hat{p}_j$</span>, where <span class="math"><em>a</em><sub><em>j</em></sub></span> is the segment area and <span class="math">$\hat{p}_j$</span> is estimated from the detection function. We can fit this model in R using the <code>dsm()</code> function in the <code>dsm</code> package:</p>
+<pre class="r"><code># load packages and the dolphin data
+library(dsm)
+library(Distance)
+data(mexdolphins)
+# fit a detection function
+dolphin_df &lt;- ds(distdata, truncation=6000)
+# fit a dsm
+simple_dsm &lt;- dsm(formula=count~s(y), family=tw(), ddf.obj=dolphin_df,
+                  segment.data=segdata, observation.data=obsdata)</code></pre>
+<p>This code specifies our mathematical model: inside the link we have our formula (<code>formula=count ~ s(y)</code>), the response distribution (<code>family=tw()</code>), detectability information in the form of the fitted detection function from <code>Distance</code> (<code>ddf.obj=dolphin_df</code>), offset and segment-level data (<code>segment.data=segdata</code>) and finally the table linking observations to the segments (<code>observation.data=obsdata</code>). The last of these is not strictly-speaking in the formula above, but is implied.</p>
+<p>The <code>dsm</code> package is based on the popular <code>mgcv</code> package by Simon Wood. The main thing that the <code>dsm()</code> function does is take the data formatted as detection function, segments and observations and appropriately aggregate it. The rest of the package provides the utility functions we’ll use later on. Most of the output from <code>dsm</code> is actually being generated by <code>mgcv</code> in the background at some point. Most of the syntax we’ll learn for <code>dsm()</code> can be applied to <code>gam()</code> models</p>
+<p>Having fitted this model, we can inspect the returned object and find the mathematical objects we saw above. First, we can look at the model graphically, by calling <code>plot</code> as usual:</p>
+<pre class="r"><code>plot(simple_dsm, main=&quot;Smooth of x, k default&quot;)</code></pre>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/plotsmooth-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 1: Plot of the smooth of Northing on the Guld of Mexico dolphins for a model with the default basis size (10, left) and a basis size of 20 (right).
+</figcaption>
+</figure>
+<p>In Figure XXX, dashed lines indicate +/- 2 standard errors from the fitted smooth in solid line, the lines at on the horizontal axis are a rug plot indicating the locations of the observed data. The label on the vertical axis tells us that the model term’s name and gives an indication of how complex the function is (more on this in a moment). Importantly, the plot is on the link scale, so we could exponentiate it to get a plot on the response scale here, but generally we look at these plots on the link scale<a href="#fn10" class="footnoteRef" id="fnref10"><sup>10</sup></a>.</p>
+<p>The plot shows that there is a range of values of Northing that seem to be appealing to the dolphins but those in the extreme north and south appear to be less appealing. Going back to the plot of the data in the “Why do spatial modelling?” chapter, this seems believable.</p>
+<p>Now let’s look at extracting the mathematical objects we talked about above. First we cal look at the coefficients we estimated (the <span class="math"><em>β</em><sub><em>k</em></sub></span>s):</p>
+<pre class="r"><code>coef(simple_dsm)</code></pre>
+<pre><code>##  (Intercept)       s(y).1       s(y).2       s(y).3       s(y).4 
+## -16.86252328  -0.55370495  -0.28110898   0.08177955  -0.22026833 
+##       s(y).5       s(y).6       s(y).7       s(y).8       s(y).9 
+##   0.08781170  -0.57486697   0.24403478   2.79348437  -1.07253867</code></pre>
+<p>and also we can see what the smoothing parameter was estimated to be:</p>
+<pre class="r"><code>simple_dsm$sp</code></pre>
+<pre><code>##    s(y) 
+## 2.50573</code></pre>
+<p>We can also look at the penalty matrix:</p>
+<pre class="r"><code>simple_dsm$smooth[[1]]$S[[1]]</code></pre>
+<pre><code>##                [,1]          [,2]          [,3]          [,4]
+##  [1,]  1.329512e+01 -2.117904e+00 -7.568354e+00  1.213621e+00
+##  [2,] -2.117904e+00  2.963613e+01  1.148526e+00 -1.304797e+01
+##  [3,] -7.568354e+00  1.148526e+00  1.265049e+02  4.593004e+00
+##  [4,]  1.213621e+00 -1.304797e+01  4.593004e+00  1.163063e+02
+##  [5,] -8.523928e+00  3.164233e+00 -9.368721e+00  6.464227e+00
+##  [6,]  6.000226e+00 -2.458128e+01  9.280728e+00 -3.554152e+01
+##  [7,] -1.099882e+01  1.628152e+01 -1.270771e+01  2.293885e+01
+##  [8,]  2.981452e+00  3.508034e-01 -1.602983e+00  1.384243e+01
+##  [9,]  1.752331e-15  2.061826e-16 -9.421434e-16  8.135808e-15
+##                [,5]          [,6]          [,7]          [,8]
+##  [1,] -8.523928e+00  6.000226e+00 -1.099882e+01  2.981452e+00
+##  [2,]  3.164233e+00 -2.458128e+01  1.628152e+01  3.508034e-01
+##  [3,] -9.368721e+00  9.280728e+00 -1.270771e+01 -1.602983e+00
+##  [4,]  6.464227e+00 -3.554152e+01  2.293885e+01  1.384243e+01
+##  [5,]  2.319356e+02  1.080374e+01 -1.358976e+01 -4.887908e+00
+##  [6,]  1.080374e+01  2.282082e+02  3.066465e+01  3.166317e+01
+##  [7,] -1.358976e+01  3.066465e+01  3.600327e+02 -2.303989e+01
+##  [8,] -4.887908e+00  3.166317e+01 -2.303989e+01  1.637532e+01
+##  [9,] -2.872839e-15  1.860984e-14 -1.354156e-14  9.624496e-15
+##                [,9]
+##  [1,]  1.752331e-15
+##  [2,]  2.061826e-16
+##  [3,] -9.421434e-16
+##  [4,]  8.135808e-15
+##  [5,] -2.872839e-15
+##  [6,]  1.860984e-14
+##  [7,] -1.354156e-14
+##  [8,]  9.624496e-15
+##  [9,]  5.656740e-30</code></pre>
+<p>Note that the penalty matrix is 9 by 9, but there are 10 coefficients. This is because the intercept term (handily labelled as such) is subtracted from the model during fitting (known as an <em>idenitfiability constraint</em>), as a constant, it also doesn’t have any second derivatives, so doesn’t have an associated entry in the penalty matrix.</p>
+<p>Unlike linear regression, these numbers are not really directly interpretable, but it’s useful to know that they are there and we will use them later on.</p>
+<p>Now, we’ve said there are 10 coefficients in the model and this, of course relates to the basis size <span class="math"><em>K</em></span> that we defined above. We can increase <span class="math"><em>K</em></span> per-term in the model, making it have more potential complexity (we often refer to <span class="math"><em>K</em></span> a <em>basis complexity</em> or <em>basis size</em>) and we can control this in R using the <code>k</code> argument to <code>s</code>. So, we can double the basis size:</p>
+<pre class="r"><code>double_k_dsm &lt;- dsm(formula=count~s(y, k=20),
+                    family=tw(), ddf.obj=dolphin_df,
+                    segment.data=segdata, observation.data=obsdata)</code></pre>
+<p>We can see that this changed the number of coefficients and the size of the penalty matrix (let’s not print out all those numbers again):</p>
+<pre class="r"><code>length(coef(double_k_dsm))</code></pre>
+<pre><code>## [1] 20</code></pre>
+<pre class="r"><code>dim(double_k_dsm$smooth[[1]]$S[[1]])</code></pre>
+<pre><code>## [1] 19 19</code></pre>
+<p>Looking at Figure XXXX, we don’t see a difference in the plots. So, what’s going on here? We increased the number of basis function we use to represent the smooth, but the smooth didn’t change, meaning that we had a good idea of what the function should look like when we just use 10 basis functions (we’ll use this trick extensively later to see how complex we should let things be). Looking back at the coefficients, we see that some of them are quite small and some are negative, can we measure how many of the basis functions are really being used? Yes, the number reported in the “s()” in the plots gives us the <em>estimated degrees of freedom</em> (EDF) – the amount of that basis complexity that is used in the smooth. Handily, we can compute this:</p>
+<pre class="r"><code>sum(influence(simple_dsm))</code></pre>
+<pre><code>## [1] 4.047065</code></pre>
+<pre class="r"><code>sum(influence(double_k_dsm))</code></pre>
+<pre><code>## [1] 4.094203</code></pre>
+<p>where <code>influence()</code> will extract the diagonal elements from the influence or hat matrix of the model (CITE XXXX), that is the matrix <span class="math">$\hat{\mathbf{A}}$</span> such that <span class="math">$\hat{\mu} = \hat{\mathbf{A}}\mathbf{x}$</span> (it “puts the hats on the <span class="math"><em>x</em></span>s”, turning them into the predictions). Note these numbers are one bigger than the number in the axis labels in the plots in Figure XXXX, as the numbers above are for the whole model, including the intercept (which adds 1 whole parameter to the total). It might seem weird at first that the EDF is not an integer, but remember that the penalty doesn’t suppress the effect of whole basis functions, just their wiggliness.</p>
+<p>We can see what the estimated Tweedie power parameter is:</p>
+<pre class="r"><code>simple_dsm$family$getTheta(trans=TRUE)</code></pre>
+<pre><code>## [1] 1.401401</code></pre>
+<p>(note we need to specify <code>trans=TRUE</code> to put the power parameter on the right scale for us to understand).</p>
+<p>Now we’ve looked at our model the hard way, we can also look at a summary:</p>
+<pre class="r"><code>summary(simple_dsm)</code></pre>
+<pre><code>## 
+## Family: Tweedie(p=1.401) 
+## Link function: log 
+## 
+## Formula:
+## count ~ s(y) + offset(off.set)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -16.8625     0.2552  -66.07   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##        edf Ref.df     F p-value  
+## s(y) 3.047   3.83 2.835  0.0268 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.013   Deviance explained = 13.4%
+## -REML = 305.18  Scale est. = 66.702    n = 387</code></pre>
+<p>We have the information we just extracted plus more, including the Tweedie parameter, the EDF of each term in the model as well as some information on significance, deviance and adjusted <span class="math"><em>R</em><sup>2</sup></span><a href="#fn11" class="footnoteRef" id="fnref11"><sup>11</sup></a>. Note that the model formula includes a term <code>offset(off.set)</code> this is the <span class="math">$a_j\hat{p}_j$</span> in the formula (R needs to know it’s an offset, and therefore has no coefficient to estimate, so it gets encased in <code>offset()</code>). We’ll explore more of the <code>summary()</code> output as we continue looking at GAMs (though the output is very similar to the <code>summary()</code> output for a <code>lm</code> or <code>glm</code> object). <code>summary()</code> is usually the first step in investigating the model results.</p>
+<div id="adding-a-term" class="section level3">
+<h3>Adding a term</h3>
+<p>To add another term into our model, we just use <code>+</code> to include it:</p>
+<pre class="r"><code>xy_dsm &lt;- dsm(formula=count~s(y) + s(x),
+              family=tw(), ddf.obj=dolphin_df,
+              segment.data=segdata, observation.data=obsdata)</code></pre>
+<p>Looking at the corresponding <code>summary()</code> output, we see an additional line in the smooth terms table:</p>
+<pre class="r"><code>summary(xy_dsm)</code></pre>
+<pre><code>## 
+## Family: Tweedie(p=1.377) 
+## Link function: log 
+## 
+## Formula:
+## count ~ s(y) + s(x) + offset(off.set)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -17.0909     0.2714  -62.98   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##        edf Ref.df     F p-value  
+## s(y) 3.243  4.072 2.880  0.0228 *
+## s(x) 3.011  3.809 2.252  0.0642 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.0388   Deviance explained = 22.2%
+## -REML = 302.67  Scale est. = 64.054    n = 387</code></pre>
+<p>In the next chapter on practical DSMs, we’ll look at whether that was a good idea (in the sense of model selection), but for now, let’s just experiment with the model structure. We can plot that model as before, and see the two plots for the two terms in the model.</p>
+<pre class="r"><code>par(mfrow=c(1, 2))
+plot(xy_dsm, shade=TRUE)</code></pre>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/plotsmooth_xy-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 8: Plot of the smooths of Northing and Easting on the Guld of Mexico dolphins. Note that setting <code>shade=TRUE</code> means our +/- 2 standard error band is shaded gray rather than delimited with dotted lines, this can be easier to see on plots with many elements.
+</figcaption>
+</figure>
+<p>The model <code>xy_dsm</code> treats the effects of Northing and Easting as additive, but this ignores their joint effect (the model only addresses their marginal effects). We can include bivariate terms terms in our model instead. How we do this depends on the exact form of the basis functions we use, but for the default basis in <code>mgcv</code> (and hence <code>dsm</code>, thin plate regression splines), we can simply add another variable to our <code>s</code> term and again look at the summary:</p>
+<pre class="r"><code>xy_bi_dsm &lt;- dsm(formula=count~s(x, y), family=tw(), ddf.obj=dolphin_df,
+                    segment.data=segdata, observation.data=obsdata)
+summary(xy_bi_dsm)</code></pre>
+<pre><code>## 
+## Family: Tweedie(p=1.347) 
+## Link function: log 
+## 
+## Formula:
+## count ~ s(x, y) + offset(off.set)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -17.6386     0.3095  -56.99   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##          edf Ref.df     F p-value   
+## s(x,y) 16.19  20.78 2.184 0.00214 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.107   Deviance explained = 41.6%
+## -REML = 301.05  Scale est. = 56.808    n = 387</code></pre>
+<p>We now see that there is only one smooth term, <code>s(x,y)</code>. We can plot this effect in 2 dimensions using a heatmap (we use <code>scheme=1</code> to produce the heatmap rather than the other, harder to read options; <code>asp=1</code> sets the <span class="math"><em>x</em></span>-<span class="math"><em>y</em></span> aspect ratio to be one). We can also overplot the locations of the non-zero counts with circles.</p>
+<pre class="r"><code>plot(xy_bi_dsm, scheme=1, asp=1)
+points(xy_bi_dsm$data[, c(&quot;x&quot;,&quot;y&quot;)][xy_bi_dsm$data$count&gt;0, ])</code></pre>
+<figure>
+<img src='dsm-gamcrash_files/figure-html/plotsmooth-bi-xy-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 9: Plot of the bivariate smooth of Northing and Easting on the Guld of Mexico dolphins. Heatmap colours indicate that red is lower values, white higher. Dots indicate observation locations (segments) and circles the location of non-zero counts. Again this plot is on the linear predictor (logarithmic) scale.
+</figcaption>
+</figure>
+<p>This model doesn’t seem too satisfying, but we’ll look into that more in the next chapter. For now let us be content with the increase in deviance explained and <span class="math"><em>R</em><sup>2</sup></span>.</p>
+</div>
+</div>
+<div id="recap" class="section level2">
+<h2>Recap</h2>
+<p>In this chapter you’ve had a whirlwind tour of generalized additive models from the perspective of fitting spatial distance sampling data. We looked at what a generalized additive model is doing (fitting a model to the mean of a distribution) and how it does it (adding wiggly functions of the covariates). We also saw how we can measure wigglyness (via integrating squared derivatives) and go a rough idea of how to trade-off flexibility and overfitting. We finally tried this out in practice using the <code>dsm</code> package, which is very similar to <code>mgcv</code>.</p>
+<p>Next chapter we’ll dive into this further and start building and selecting between more complex models.</p>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<ul>
+<li>(CITE Hastie GAM book) is the “original” reference text on GAMs and is somewhat technical. It now seems a little long in the tooth (especially when it comes to thinking about fitting and uncertainty estimation) but there are many sections that are still highly relevant.</li>
+<li><span class="citation">Ruppert, Wand and Carroll (2003)</span> is another classic statistical text on generalized additive models. Though less hollistic than (CITE WOOD 2017), it’s perspective is still very useful.</li>
+<li><span class="citation">Ver Hoef and Boveng (2007)</span> compare quasi-Poisson and negative binomial models for fitting abundance data. This paper gives some nice insights into how these models are fitted and what they really are doing with count data.</li>
+<li><span class="citation">Shono (2008)</span> gives an introduction to the Tweedie distribution from a fisheries perspective.</li>
+<li><span class="citation">Candy (2004)</span></li>
+</ul>
+<div class="references">
+<h2 id="references" class="unnumbered">References</h2>
+<p>Candy, S.G. (2004) Modelling catch and effort data using generalised linear models, the Tweedie distribution, random vessel effects and random stratum-by-year effects. <em>Ccamlr Science</em>.</p>
+<p>Ruppert, D., Wand, M.P. and Carroll, R.J. (2003) <em>Semiparametric Regression</em>. Cambridge University Press.</p>
+<p>Shono, H. (2008) Application of the Tweedie distribution to zero-catch data in CPUE analysis. <em>Fisheries Research</em>, <strong>93</strong>, 154–162.</p>
+<p>Tweedie, M.C.K. (1984) An index which distinguishes between some important exponential families., 579–604.</p>
+<p>Ver Hoef, J.M. and Boveng, P.L. (2007) Quasi-Poisson vs. negative binomial regression: how should we model overdispersed count data? <em>Ecology</em>, <strong>88</strong>, 2766–2772.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Natalie Kelly (Australian Antarctic Division) pointed me to another definition of “gam”, as seen in Moby Dick. 1. Collective noun used to refer to a group of whales, or rarely also of porpoises; a pod or, 2. (by extension) A social gathering of whalers.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>There are other options for “overdispersed” data, including so-called “zero-inflated” models. We don’t discuss them here as they don’t currently fit into the GAM framework very easily. It’s also worth noting that “zero-inflation” is a complex concept and really refers to a rather specific situation (excess zeros conditional on the model) rather than just “a lot of zeros in the data”.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>Strictly speaking, by “quasi-Poisson” we mean “quasi-likelihood methods with Poisson assumptions” <span class="citation">Ver Hoef and Boveng (2007)</span>.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>Historically, this has not been the case and various strategies have been suggested to select <span class="math"><em>q</em></span> as Tweedie is only an exponential family distribution for fixed values of <span class="math"><em>q</em></span>. One popular strategy was to refit the model for <span class="math"><em>q</em> = 1.2, 1.3, …, 1.9</span> and select the best model by AIC. As we’ll see below, this is no longer necessary.<a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p>To get around this we could use a different set of polynomials, like the Hermite polynomials we saw as an adjustment term for detection functions, but they will still act globally over the whole covariate range.<a href="#fnref5">↩</a></p></li>
+<li id="fn6"><p>For example for a linear regression, we might actually use something like ordinary least squares (OLS). Though thanks to the Gauss-Markov theorem, we know that estimates from liklihood and OLS are the same for linear models (if some reasonable conditions apply).<a href="#fnref6">↩</a></p></li>
+<li id="fn7"><p>Note that the penalty-basis function story is more complicated than this and generally speaking, we start with a penalty and the penalty implies a set of basis functions. We’ll get into this in more detail later, for now bear in mind that this is not a general statement of the penalty.<a href="#fnref7">↩</a></p></li>
+<li id="fn8"><p>Try this out for yourself! Start by expanding out the sqaured and simplifying. If you get stuck, try from the other direction and multiply out the matrices.<a href="#fnref8">↩</a></p></li>
+<li id="fn9"><p>Note that <span class="math">log</span> is the link function, so <span class="math">exp</span> is referred to as the inverse link.<a href="#fnref9">↩</a></p></li>
+<li id="fn10"><p>We can exponentiate this plot to get things on the response scale, but this gets more tricky with more complicated models with multiple terms, so it’s generally recommended that one sticks to looking at plots of terms on the link scale.<a href="#fnref10">↩</a></p></li>
+<li id="fn11"><p>Cosma Shalizi has some useful thoughts on the topic of <span class="math"><em>R</em><sup>2</sup></span> at <a href="https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/10/lecture-10.pdf"><a href="https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/10/lecture-10.pdf" class="uri">https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/10/lecture-10.pdf</a></a>. One of the most useful to us here is that <span class="math"><em>R</em><sup>2</sup></span> can be arbitrarily high when the model is completely wrong and arbitrarily low when the model is correct.<a href="#fnref11">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- end google analytics -->
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>
