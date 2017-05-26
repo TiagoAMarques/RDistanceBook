@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Why build spatial models?</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+@media (max-width: 979px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+@media (min-width: 980px) {
+  .section h2 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+  .section h3 {
+    padding-top: 52px;
+    margin-top: -52px;
+  }
+}
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+/*get rid of horrible red button*/
+.btn-primary{
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+/*Make figures indent*/
+figure{
+  margin: 1em 40px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-brand">Distance Samping in R</a>
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ds">Distance sampling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ds">
+            <li><a href="distance-intro.html">Introduction to distance sampling</a></li>
+            <li><a href="distance-simpledf.html">Models for detectability</a></li>
+            <li><a href="distance-covardf.html">What else affects detectability?</a></li>
+            <li><a href="distance-moredf.html">Improving the fit of detection functions</a></li>
+            <li><a href="distance-abundance.html">Estimating abundance</a></li>
+            <li><a href="distance-uncertainty.html">How certain are we in our estimates?</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="sp">Spatial modelling <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="sp">
+            <li><a href="dsm-why.html">Why build spatial models?</a></li>
+            <li><a href="dsm-surveysetup.html">Survey data set up</a></li>
+            <li><a href="dsm-formulation.html">Model formulation</a></li>
+            <li><a href="dsm-gamcrash.html">Crash course in GAMs</a></li>
+            <!--<li><a href="dsm-.html">Fitting density surface models</a></li>
+            <li><a href="dsm-.html">Adding covariates</a></li>
+            <li><a href="dsm-.html">Estimating and mapping abundance</a></li>
+            <li><a href="dsm-.html">Uncertainty estimation</a></li>
+            <li><a href="dsm-.html">Advanced DSMs</a></li>-->
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="ap">Appendix <span class="caret"></span></a>
+          <ul class="dropdown-menu" aria-labelledby="ap">
+            <li><a href="appendix-.html">Obtaining, constructing and selecting covariates</a></li>
+            <li><a href="appendix-dataformat.html">Getting your data into shape</a></li>
+            <li><a href="appendix-.html">Projections etc</a></li>
+                           <li class="divider"></li>
+            <li><a href="acknowledgements.html">Acknowledgements</a></li>
+            <li><a href="rversions.html">R and package versions</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="btn btn-primary" href="https://github.com/dill/RDistanceBook">
+          <i class="fa fa-github fa-lg"></i>
+          GitHub
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Why build spatial models?</h1>
+
+</div>
+
+
+<p>Looking back at the first chapter, <a href="distance-intro.html">Introduction to distance sampling</a>, we saw some simulations of animal populations. In these examples animals were distributed pretty uniformly across the survey area. In reality, the locatio of animals in space is driven by a variety of factors: climate, prey availability, ease of movement and more play a role.</p>
+<p>Taking another look at the pantropical spotted dolphins in the Gulf of Mexico, the data were collected with spatial information (location of observations and bathymetry at those points). We can investigate the relationship between these covariates and the observered counts by plotting the data in two ways, first simply looking at histograms of counts with respect to covariate values:</p>
+<pre><code>## Warning: Ignoring unknown aesthetics: weight
+
+## Warning: Ignoring unknown aesthetics: weight
+
+## Warning: Ignoring unknown aesthetics: weight</code></pre>
+<figure>
+<img src='dsm-why_files/figure-html/pantropical-geo-eda-hist-1.png' width='960'height=''width.px='960'height.px='288' style='display: block'>
+<figcaption>
+Figure 1: Histograms showing the number of dolphins observed at different Eastings, Northings and depths in the Gulf of Mexico.
+</figcaption>
+</figure>
+<p>We can see from the histograms that there are distinct peaks at particular values and avoidance of other values. For example, from this crude exploratory analysis we see that the dolphins tend to be observed near the centre of the survey area and appear to avoid shallow waters.</p>
+<p>The one-dimensional slices offered by the histograms are useful, but don’t tell the full story about what’s happening in these data. So, we plot the observations over a map of the depth values:</p>
+<figure>
+<img src='dsm-why_files/figure-html/pantropical-geo-eda-plot-1.png' width='960'height=''width.px='960'height.px='480' style='display: block'>
+<figcaption>
+Figure 2: Bathymetry of the Gulf of Mexico study area with observations of pantropical spotted dolphins (green points) and transect lines (red lines) overlaid.
+</figcaption>
+</figure>
+<p>Also plotted (in red) are the transect lines that the Oregon II travelled. This shows that the survey had relatively good coverage of the survey area in space, but less good coverage in terms of the depth covariate.</p>
+<p>From the above plots we can see that there is definitely some correlation between the pantropical spotted dolphins and the covariates we’ve collected on location and depth.</p>
+<p>The aim of this section is to talk about how to model this relationship. Before we go into the details of the models we’ll use, let’s first think about why one might want to do such an analysis.</p>
+<div id="why-go-through-all-the-fuss" class="section level2">
+<h2>Why go through all the fuss?</h2>
+<p>There are a number of reasons to model the distributions of biological populations explicitly in space:</p>
+<ul>
+<li>First and foremost, stated above, we note that animals do not generally have uniform distributions in space and their locations are largely dictated by biotic and abiotic environmental variables. This becomes problematic for abundance estimation as the study area becomes bigger or the relationship between distribution and environmental factors becomes more complex. In order to create realistic models we should take into account as many factors as possible that influence the distribution and abundance of the population in question.</li>
+<li>Since we then model the abundances on a smaller spatial scale (than when using the Horvtiz-Thompson estimator we saw in <a href="distance-abundance.html">Estimating abundance</a>), we can also expect more precise estimates of abundance.</li>
+<li>Modelling abundance as a function of not only spatial location, but also other environmental covariates allows us to make ecological inference about the population – what attracts a population to an area, what repels it?</li>
+<li>Non-quantitatively-minded people find looking at maps much more compelling than simply a number (or worse, a table of numbers<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>). Displaying maps to a non-statistical audience can be an effective way to get their attention and have them engage with the modelling process (especially in terms of model checking and criticism, which can often seen like magic to non-statisticians).</li>
+</ul>
+<p>Often the first and last reasons above dominate most peoples’ motivation for building spatially explicit models: they need to know where animals are and they want this information to be accessible to others.</p>
+</div>
+<div id="model-based-analysis" class="section level2">
+<h2>Model-based analysis</h2>
+<p>The major contrast between the approach detailed in this chapter and that of the previous chapters is that we now consider <em>model</em>-based inference about the biological populations in question rather than <em>design</em>-based inference. This has some advantages and some disadvantages. A spatially-explicit model can explain the between-transect variation (which is often a large component of the variance in design-based estimates) and so using a model-based approach can lead to smaller variance in estimates of abundance than design-based estimates.</p>
+<ul>
+<li>more here coverage prob., incidental surveys etc</li>
+</ul>
+</div>
+<div id="recap" class="section level2">
+<h2>Recap</h2>
+<p>This chapter looked breifly at the Gulf of Mexico data again, showing that there are spatial elements to the data. If abundance is non-uniform with respect to spatial or environmental covariates we should model this variation to ensure the most precise estimates of abundance. The next few chapters will explain how this is possible using the R package <code>dsm</code>.</p>
+</div>
+<div id="further-reading" class="section level2">
+<h2>Further reading</h2>
+<ul>
+<li><span class="citation">Elith and Leathwick (2009)</span> provide a review of species distribution modelling, including history and broad conceptual overview.</li>
+<li><span class="citation">Warren (2012)</span>, <span class="citation">McInerny and Etienne (2013)</span> and <span class="citation">Sillero (2011)</span> discuss the nomenclature of the spatial modelling of animal distributions (sometimes called “niche modelling” or “species distribution modelling”).</li>
+</ul>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-Elith:2009gj">
+<p>Elith, J. and Leathwick, J.R. (2009) Species Distribution Models: Ecological Explanation and Prediction Across Space and Time. <em>Annual Review of Ecology, Evolution, and Systematics</em>, <strong>40</strong>, 677–697.</p>
+</div>
+<div id="ref-Gelman:2011hb">
+<p>Gelman, A. (2011) Why Tables Are Really Much Better Than Graphs. <em>Journal of Computational and Graphical Statistics</em>, <strong>20</strong>, 3–7.</p>
+</div>
+<div id="ref-McInerny:2013db">
+<p>McInerny, G.J. and Etienne, R.S. (2013) Niche or distribution modelling? A response to Warren. <em>Trends in Ecology &amp; Evolution</em>, <strong>28</strong>, 191–192.</p>
+</div>
+<div id="ref-Sillero:2011da">
+<p>Sillero, N. (2011) What does ecological modelling model? A proposed classification of ecological niche models based on their underlying methods. <em>Ecological Modelling</em>, <strong>222</strong>, 1343–1346.</p>
+</div>
+<div id="ref-Warren:2012bv">
+<p>Warren, D.L. (2012) In defense of niche modeling. <em>Trends in Ecology &amp; Evolution</em>, <strong>27</strong>, 497–500.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>For more (light-hearted) discussion on graphs vs. tables see <span class="citation">Gelman (2011)</span>.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('distance'))
+      $('a[href="' + 'ds' + '"]').parent().addClass('active');
+    else if (href.startsWith('dsm'))
+      $('a[href="' + 'dsm' + '"]').parent().addClass('active');
+    else if (href.startsWith('appendix'))
+      $('a[href="' + 'appendices' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+ <!-- mathjax config -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!-- end mathjax config -->
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59249399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- end google analytics -->
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+</body>
+</html>
